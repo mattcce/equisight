@@ -22,7 +22,7 @@
 		"lint": "prettier --check . && eslint .",
 		"test:unit": "vitest",
 		"test": "npm run test:unit -- --run",
-		"docs:dev": "vitepress dev docs",
+		"docs:dev": "vitepress dev docs --port 5174",
 		"docs:build": "vitepress build docs",
 		"docs:preview": "vitepress preview docs"
 	},
