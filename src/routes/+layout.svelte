@@ -29,7 +29,7 @@
 <nav class="fixed bottom-0 left-0 w-full bg-gray-100 p-3">
 	<div class="flex h-[43px] justify-center">
 		<ul class="flex w-xs flex-row items-center justify-around">
-			{#each navLocations as { location, display, icon }}
+			{#each navLocations as { location, display, icon } (location)}
 				<li>
 					<NavButton {location} {display} {icon} bind:currentLocation={navCurrentLocation} />
 				</li>
