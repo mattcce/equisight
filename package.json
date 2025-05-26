@@ -4,10 +4,10 @@
 	"version": "0.0.1",
 	"type": "module",
 	"lint-staged": {
-		"*.{js, jsx,ts,tsx}": [
+		"*.{svelte,js,jsx,ts,tsx}": [
 			"eslint --quiet --fix"
 		],
-		"*.{json,js,ts,jsx,tsx,html}": [
+		"*.{svelte,json,js,ts,jsx,tsx,html}": [
 			"prettier --write --ignore-unknown"
 		]
 	},
