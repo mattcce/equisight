@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% set page_title = 'Search Ticker' %}
+{% block content %}
+<h2>Search Ticker</h2>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            {% if category == 'error' %}
+                <p style="color: red;">{{ message }}</p>
+            {% else %}
+                <p style="color: green;">{{ message }}</p>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+
+<form method="POST">
+    <input type="text" name="ticker" placeholder="Enter ticker symbol (e.g., AAPl)" required>
+    <button type="submit">Search</button>
+</form>
+
+<p>Popular Tickers:</p>
+<ul>
+    <li><a href="/ticker/AAPL">AAPL</a></li>
+    <li><a href="/ticker/GOOGL">GOOGL</a></li>
+    <li><a href="/ticker/MSFT">MSFT</a></li>
+    <li><a href="/ticker/TSLA">TSLA</a></li>
+</ul>
+{% endblock %}

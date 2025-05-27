@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Welcome to EquiSight</h1>
+{% if session.user_id %}
+    <p>Welcome! You are logged in.</p>
+    <p>Try accessing ticker data: <code>/AAPL/history/</code></p>
+{% else %}
+    <p>Please <a href="/login">login</a> to continue.</p>
+{% endif %}
+{% endblock %}

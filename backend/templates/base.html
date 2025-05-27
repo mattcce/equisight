@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>EquiSight</title>
+</head>
+<body>
+    <nav>
+        <a href="/">Home</a>
+        {% if session.user_id %}
+            <a href="/dashboard">Dashboard</a>
+            <a href="/logout">Logout</a>
+            <a href="/ticker">Search Ticker</a>
+        {% else %}
+            <a href="/login">Login</a>
+        {% endif %}
+    </nav>
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+</body>
+</html>
