@@ -21,8 +21,9 @@
 </div>
 
 <div class="flex justify-center">
-	<div class="my-20 w-xs">
+	<div class="my-20 flex w-xs flex-col space-y-2">
 		<!-- main content goes here -->
+		{@render children()}
 	</div>
 </div>
 
@@ -37,5 +38,3 @@
 		</ul>
 	</div>
 </nav>
-
-{@render children()}
