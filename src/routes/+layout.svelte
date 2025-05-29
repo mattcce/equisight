@@ -11,7 +11,7 @@
 		{ location: '/analysis', display: 'Analysis', icon: '/icons/analytics_20dp.svg' }
 	];
 
-	let navCurrentLocation = $state('News');
+	let navCurrentLocation = $derived(page.url.pathname.split('/')[1]);
 </script>
 
 <div class="fixed top-0 left-0 w-full bg-gray-100 p-3">
@@ -32,7 +32,7 @@
 		<ul class="flex w-xs flex-row items-center justify-around">
 			{#each navLocations as { location, display, icon } (location)}
 				<li>
-					<NavButton {location} {display} {icon} bind:currentLocation={navCurrentLocation} />
+					<NavButton {location} {display} {icon} currentLocation={navCurrentLocation} />
 				</li>
 			{/each}
 		</ul>

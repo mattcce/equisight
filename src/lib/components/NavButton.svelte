@@ -4,7 +4,7 @@
 	let {
 		location,
 		display,
-		currentLocation = $bindable(),
+		currentLocation,
 		icon
 	}: {
 		location: string;
@@ -13,7 +13,7 @@
 		icon: string;
 	} = $props();
 
-	let isSelected = $derived(currentLocation == display);
+	let isSelected = $derived(currentLocation == display.toLowerCase());
 	let isHovered = $state(false);
 </script>
 
@@ -28,7 +28,6 @@
 	onfocus={() => {}}
 	onblur={() => {}}
 	onclick={() => {
-		currentLocation = display;
 		goto(location);
 	}}
 >
