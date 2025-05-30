@@ -1,5 +1,9 @@
 <script lang="ts">
 	import * as Card from '$lib/components/ui/card';
+	import { Separator } from '$lib/components/ui/separator';
+	import EquityHolding from '$lib/components/EquityHolding.svelte';
+
+	let { data } = $props();
 
 	let {
 		totals: {
@@ -30,7 +34,7 @@
 
 <Card.Root>
 	<Card.Header>
-		<div class="text-center text-sm [font-variant:small-caps]">Total Holdings</div>
+		<div class="text-center text-sm font-semibold [font-variant:small-caps]">Total Holdings</div>
 
 		<div>
 			<div class="text-center">
@@ -92,3 +96,13 @@
 		</div>
 	</Card.Content>
 </Card.Root>
+
+<Separator />
+
+<div class="text-sm font-semibold [font-variant:small-caps]">Open Positions</div>
+
+<!-- TODO: to be converted to keyed each block (after removing duplication) -->
+<!--  eslint-disable-next-line svelte/require-each-key -->
+{#each data.tickers as tickerData}
+	<EquityHolding {tickerData} priceData={data.prices[tickerData.symbol]} />
+{/each}
