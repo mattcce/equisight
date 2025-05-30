@@ -14,7 +14,7 @@
 	let navCurrentLocation = $derived(page.url.pathname.split('/')[1]);
 </script>
 
-<div class="fixed top-0 left-0 w-full bg-gray-100 p-3">
+<div class="fixed top-0 left-0 z-1000 w-full bg-gray-100 p-3">
 	<div class="flex h-[43px] items-end justify-center">
 		{page.url.pathname}
 	</div>
@@ -27,7 +27,7 @@
 	</div>
 </div>
 
-<nav class="fixed bottom-0 left-0 w-full bg-gray-100 p-3">
+<nav class="fixed bottom-0 left-0 z-1000 w-full bg-gray-100 p-3">
 	<div class="flex h-[43px] justify-center">
 		<ul class="flex w-xs flex-row items-center justify-around">
 			{#each navLocations as { location, display, icon } (location)}
