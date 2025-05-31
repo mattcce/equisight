@@ -1,6 +1,5 @@
 <script lang="ts">
 	import * as Card from '$lib/components/ui/card';
-	import { Separator } from '$lib/components/ui/separator';
 	import EquityHolding from '$lib/components/EquityHolding.svelte';
 
 	let { data } = $props();
@@ -96,8 +95,6 @@
 		</div>
 	</Card.Content>
 </Card.Root>
-
-<Separator />
 
 <div class="text-sm font-semibold [font-variant:small-caps]">Open Positions</div>
 
