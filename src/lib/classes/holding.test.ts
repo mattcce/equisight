@@ -12,14 +12,14 @@ describe('Holding', () => {
 		expect(holding.totalQuantity).toBe(4);
 	});
 
-	it('should return correct total market value', () => {
+	it('should return correct initial investment value', () => {
 		const holding = new Holding('EXAMPLE', [
 			new Position(Direction.BUY, 2, 4),
 			new Position(Direction.SELL, 1, 6),
 			new Position(Direction.BUY, 3, 2)
 		]);
 
-		expect(holding.totalMarketValue).toBe(8);
+		expect(holding.totalInvestment).toBe(8);
 	});
 
 	it('should return correct average cost', () => {
@@ -39,11 +39,21 @@ describe('Holding', () => {
 			new Position(Direction.BUY, 3, 2)
 		]);
 
-		expect(holding.totalMarketValue).toBe(8);
+		expect(holding.totalInvestment).toBe(8);
 
 		holding.addOpenPosition(new Position(Direction.BUY, 4, 4));
 
-		expect(holding.totalMarketValue).toBe(24);
+		expect(holding.totalInvestment).toBe(24);
+	});
+
+	it('should return correct total market value', () => {
+		const holding = new Holding('EXAMPLE', [
+			new Position(Direction.BUY, 2, 4),
+			new Position(Direction.SELL, 1, 6),
+			new Position(Direction.BUY, 3, 2)
+		]);
+
+		expect(holding.totalMarketValueAtUnitPrice(10)).toBe(40);
 	});
 
 	it('should allow removal of open position', () => {
@@ -54,17 +64,17 @@ describe('Holding', () => {
 			new Position(Direction.BUY, 4, 4)
 		]);
 
-		expect(holding.totalMarketValue).toBe(24);
+		expect(holding.totalInvestment).toBe(24);
 
 		holding.removeOpenPositionAtIndex(2);
 
-		expect(holding.totalMarketValue).toBe(18);
+		expect(holding.totalInvestment).toBe(18);
 	});
 
 	it('should correctly initialise when not supplied positions at construction', () => {
 		const holding = new Holding('EXAMPLE');
 
-		expect(holding.totalMarketValue).toBe(0);
+		expect(holding.totalInvestment).toBe(0);
 		expect(holding.totalQuantity).toBe(0);
 	});
 });

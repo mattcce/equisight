@@ -1,24 +1,30 @@
-import { type TickerInfo, type PriceTimeSeries } from '$lib/api/types';
+import { API_DOMAIN } from '$lib/api/locations.js';
+import { type TickerInfo } from '$lib/api/types';
+import { Holding } from '$lib/classes/holding';
+import { getUser } from '$lib/mock/user';
 
-const tickers = ['VTI', 'VTI', 'VTI', 'VTI', 'VTI', 'VTI'];
+const user = getUser();
 
-export async function load({
-	fetch
-}): Promise<{ tickers: TickerInfo[]; prices: { [ticker: string]: PriceTimeSeries } }> {
-	const tickerInfoResponses: Response[] = await Promise.all(
-		tickers.map((t) => fetch(`/api/mock/ticker/${t}`, { method: 'GET' }))
-	);
+export async function load({ fetch }): Promise<{
+	tickers: string[];
+	info: { [ticker: string]: TickerInfo };
+	holdings: { [ticker: string]: Holding };
+}> {
+	const tickers: string[] = user.getAllHoldingsTickers();
 
-	const tickerPriceTimeSeriesResponses: Response[] = await Promise.all(
-		tickers.map((t) => fetch(`/api/mock/ticker/${t}/price`, { method: 'GET' }))
-	);
-	const prices: { [ticker: string]: PriceTimeSeries } = Object.assign(
-		{},
-		...(await Promise.all(tickerPriceTimeSeriesResponses.map((r) => r.json())))
+	const tickersInfo = await Promise.all(
+		tickers.map((t) =>
+			fetch(`http://${API_DOMAIN}/ticker/${t}/info`, { method: 'GET' })
+				.then((r) => r.json())
+				.then((i) => {
+					return { [t]: i };
+				})
+		)
 	);
 
 	return {
-		tickers: await Promise.all(tickerInfoResponses.map((r) => r.json())),
-		prices
+		tickers,
+		info: Object.assign({}, ...tickersInfo),
+		holdings: user.holdings
 	};
 }

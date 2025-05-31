@@ -1,19 +1,12 @@
-export interface Article {
+export type Article = {
 	id: string;
-	content: {
-		thumbnail: {
-			originalUrl: string;
-		};
-		clickThroughUrl: {
-			url: string;
-		};
-		title: string;
-		provider: {
-			displayName: string;
-		};
-		summary: string;
-	};
-}
+	title: string;
+	providerDisplayName: string;
+	summary: string;
+	canonicalUrl: string;
+	thumbnailUrl: string;
+	timestamp: string;
+};
 
 export type TickerInfo = {
 	symbol: string;
@@ -23,6 +16,10 @@ export type TickerInfo = {
 	marketState: string;
 	region: string;
 	currency: string;
+	previousClose: number;
 };
 
-export type PriceTimeSeries = { date: string; value: number }[];
+export type PriceHistoryEntry = {
+	date: string;
+	value: number;
+};

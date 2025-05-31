@@ -7,7 +7,7 @@ export class Holding {
 		this.#positions = openPositions || [];
 	}
 
-	get totalMarketValue(): number {
+	get totalInvestment(): number {
 		return this.#positions.reduce((acc, p) => acc + p.effectiveCost, 0);
 	}
 
@@ -16,11 +16,15 @@ export class Holding {
 	}
 
 	get averageCost(): number {
-		return this.totalMarketValue / this.totalQuantity;
+		return this.totalInvestment / this.totalQuantity;
 	}
 
 	get openPositions(): Position[] {
 		return this.#positions;
+	}
+
+	totalMarketValueAtUnitPrice(unitPrice: number): number {
+		return this.totalQuantity * unitPrice;
 	}
 
 	addOpenPosition(position: Position): void {

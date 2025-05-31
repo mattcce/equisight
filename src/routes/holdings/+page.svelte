@@ -1,34 +1,32 @@
 <script lang="ts">
 	import * as Card from '$lib/components/ui/card';
-	import EquityHolding from '$lib/components/EquityHolding.svelte';
+	import Equity from '$lib/components/Equity.svelte';
+	import ColouredIndicator from '$lib/components/ColouredIndicator.svelte';
 
 	let { data } = $props();
 
-	let {
-		totals: {
-			currentHoldings,
-			dailyPercentageChange,
-			dailyNominalChange,
-			lifetimePercentageChange,
-			lifetimeNominalChange
-		}
-	}: {
-		totals: {
-			currentHoldings: number;
-			dailyPercentageChange: number;
-			dailyNominalChange: number;
-			lifetimePercentageChange: number;
-			lifetimeNominalChange: number;
-		};
-	} = {
-		totals: {
-			currentHoldings: 10000.0,
-			dailyPercentageChange: -10000, // fixed-point arithmetic, 2dp
-			dailyNominalChange: 10000.0,
-			lifetimePercentageChange: 10000, // fixed-point arithmetic, 2dp
-			lifetimeNominalChange: 10000.0
-		}
-	};
+	let currentHoldings = data.tickers
+		.map((t) => data.holdings[t].totalMarketValueAtUnitPrice(data.info[t].regularMarketPrice))
+		.reduce((x, y) => x + y, 0);
+	let portfolioValueAtPreviousClose = data.tickers
+		.map((t) => {
+			const info = data.info[t];
+			const holding = data.holdings[t];
+			return holding.totalMarketValueAtUnitPrice(info.previousClose);
+		})
+		.reduce((x, y) => x + y, 0);
+	let portfolioValueNow = data.tickers
+		.map((t) => {
+			const info = data.info[t];
+			const holding = data.holdings[t];
+			return holding.totalMarketValueAtUnitPrice(info.regularMarketPrice);
+		})
+		.reduce((x, y) => x + y, 0);
+	let portfolioInitialInvestment = data.tickers
+		.map((t) => data.holdings[t].totalInvestment)
+		.reduce((x, y) => x + y);
+	let portfolio1DDelta = portfolioValueNow - portfolioValueAtPreviousClose;
+	let portfolioOverallDelta = portfolioValueNow - portfolioInitialInvestment;
 </script>
 
 <Card.Root>
@@ -44,62 +42,24 @@
 	</Card.Header>
 
 	<Card.Content>
-		<div class="flex flex-col text-sm">
-			<div class="flex flex-row justify-between">
-				<span class="w-14 text-sm [font-variant:small-caps]">1d</span>
-				<span
-					class={[
-						'inline-block w-18 text-right',
-						dailyPercentageChange > 0
-							? 'text-green-600'
-							: dailyPercentageChange < 0
-								? 'text-red-600'
-								: 'text-gray-600'
-					]}>{(dailyPercentageChange / 100.0).toFixed(2)}%</span
-				>
-				<span
-					class={[
-						'inline-block w-24 text-right',
-						dailyPercentageChange > 0
-							? 'text-green-600'
-							: dailyPercentageChange < 0
-								? 'text-red-600'
-								: 'text-gray-600'
-					]}>{dailyNominalChange.toFixed(2)}</span
-				>
+		<div class="grid grid-cols-3 items-baseline">
+			<div class="text-sm [font-variant:small-caps]">1d</div>
+			<div>
+				<ColouredIndicator value={portfolio1DDelta / portfolioValueAtPreviousClose} suffix="%" />
 			</div>
+			<div><ColouredIndicator value={portfolio1DDelta} /></div>
 
-			<div class="flex flex-row justify-between">
-				<span class="w-14 text-sm [font-variant:small-caps]">Overall</span>
-				<span
-					class={[
-						'inline-block w-18 text-right',
-						dailyPercentageChange > 0
-							? 'text-green-600'
-							: dailyPercentageChange < 0
-								? 'text-red-600'
-								: 'text-gray-600'
-					]}>{(lifetimePercentageChange / 100.0).toFixed(2)}%</span
-				>
-				<span
-					class={[
-						'inline-block w-24 text-right',
-						dailyPercentageChange > 0
-							? 'text-green-600'
-							: dailyPercentageChange < 0
-								? 'text-red-600'
-								: 'text-gray-600'
-					]}>{lifetimeNominalChange.toFixed(2)}</span
-				>
+			<div class="text-sm [font-variant:small-caps]">Overall</div>
+			<div>
+				<ColouredIndicator value={portfolioOverallDelta / portfolioInitialInvestment} suffix="%" />
 			</div>
+			<div><ColouredIndicator value={portfolioOverallDelta} /></div>
 		</div>
 	</Card.Content>
 </Card.Root>
 
 <div class="text-sm font-semibold [font-variant:small-caps]">Open Positions</div>
 
-<!-- TODO: to be converted to keyed each block (after removing duplication) -->
-<!--  eslint-disable-next-line svelte/require-each-key -->
-{#each data.tickers as tickerData}
-	<EquityHolding {tickerData} priceData={data.prices[tickerData.symbol]} />
+{#each data.tickers as ticker (ticker)}
+	<Equity tickerData={data.info[ticker]} holding={data.holdings[ticker]} />
 {/each}
