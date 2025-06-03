@@ -1,5 +1,6 @@
 <script lang="ts">
 	import * as Card from '$lib/components/ui/card';
+	import { Separator } from '$lib/components/ui/separator';
 	import Equity from '$lib/components/Equity.svelte';
 	import ColouredIndicator from '$lib/components/ColouredIndicator.svelte';
 
@@ -57,6 +58,8 @@
 		</div>
 	</Card.Content>
 </Card.Root>
+
+<Separator />
 
 <div class="text-sm font-semibold [font-variant:small-caps]">Open Positions</div>
 
