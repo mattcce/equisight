@@ -36,7 +36,7 @@
 		<div>
 			<div class="text-center">
 				<span class="align-[4px] text-sm">S$</span>
-				<span class="text-xl">{currentHoldings}</span>
+				<span class="text-xl">{currentHoldings.toFixed(2)}</span>
 			</div>
 		</div>
 	</Card.Header>
