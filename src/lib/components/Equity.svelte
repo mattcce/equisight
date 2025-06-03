@@ -1,14 +1,11 @@
 <script lang="ts">
 	import { type TickerInfo } from '$lib/api/types';
 	import { Holding } from '$lib/classes/holding';
-	import { Badge } from '$lib/components/ui/badge';
 	import ColouredIndicator from './ColouredIndicator.svelte';
+	import BreathingIndicator from '$lib/components/BreathingIndicator.svelte';
+	import { marketIsOpen } from '$lib/api/utils';
 
 	const { tickerData, holding }: { tickerData: TickerInfo; holding: Holding } = $props();
-
-	function marketIsOpen(marketState: string): boolean {
-		return marketState == 'REGULAR';
-	}
 
 	const dailyPercentageChange = tickerData.regularMarketPrice - tickerData.previousClose;
 	const unrealisedPL =
@@ -19,15 +16,10 @@
 	<div class="grid grid-cols-3 justify-between gap-y-[4px]">
 		<div class="col-span-2">
 			<span class="font-mono font-bold">{tickerData.symbol}</span>
-			<Badge class="h-[20px]">
-				<span
-					class={[
-						'mr-1 -ml-1 animate-pulse text-sm',
-						(marketIsOpen(tickerData.marketState) && 'text-green-600') || 'text-red-600'
-					]}>⦁</span
-				>
-				<span class="text-xs">{tickerData.fullExchangeName}</span>
-			</Badge>
+			<BreathingIndicator
+				isOn={marketIsOpen(tickerData.marketState)}
+				display={tickerData.fullExchangeName}
+			></BreathingIndicator>
 
 			<span class="text-xs font-semibold">{tickerData.region}</span>
 		</div>

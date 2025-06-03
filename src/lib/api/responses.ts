@@ -6,6 +6,6 @@ export type tickerNewsResponsePayload = {
 
 export type tickerInfoResponsePayload = TickerInfo;
 
-export type tickerPriceHistoryResponsePayload = {
-	priceHistory: PriceHistoryEntry[];
+export type tickerIntradayResponsePayload = {
+	intraday: PriceHistoryEntry[];
 };
