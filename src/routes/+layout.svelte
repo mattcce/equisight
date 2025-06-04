@@ -1,24 +1,24 @@
 <script lang="ts">
 	import { page } from '$app/state';
+	import { initNavContext } from '$lib/classes/nav.svelte';
 	import NavButton from '$lib/components/NavButton.svelte';
 	import '../app.css';
+	import TopNav from './TopNav.svelte';
 
-	let { children } = $props();
+	const { children } = $props();
 
-	let navLocations = [
+	const navLocations = [
 		{ location: '/news', display: 'News', icon: '/icons/newspaper_20dp.svg' },
 		{ location: '/holdings', display: 'Holdings', icon: '/icons/account_balance_20dp.svg' },
 		{ location: '/analysis', display: 'Analysis', icon: '/icons/analytics_20dp.svg' }
 	];
 
-	let navCurrentLocation = $derived(page.url.pathname.split('/')[1]);
+	const navCurrentLocation = $derived(page.url.pathname.split('/')[1]);
+
+	initNavContext();
 </script>
 
-<div class="fixed top-0 left-0 z-1000 w-full bg-gray-100 p-3">
-	<div class="flex h-[43px] items-end justify-center">
-		{page.url.pathname}
-	</div>
-</div>
+<TopNav></TopNav>
 
 <div class="flex justify-center">
 	<div class="my-20 flex w-xs flex-col space-y-2">

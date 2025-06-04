@@ -1,9 +1,21 @@
 <script lang="ts">
 	import { marketIsOpen } from '$lib/api/utils';
+	import { setNavContext } from '$lib/classes/nav.svelte.js';
 	import BreathingIndicator from '$lib/components/BreathingIndicator.svelte';
 	import Separator from '$lib/components/ui/separator/separator.svelte';
 
-	let { data } = $props();
+	const { data } = $props();
+
+	setNavContext(
+		{
+			display: `Ticker: ${data.ticker}`,
+			route: `/holdings/${data.ticker}`
+		},
+		{
+			display: 'Holdings',
+			route: '/holdings'
+		}
+	);
 </script>
 
 <div class="flex flex-row items-center gap-x-1">

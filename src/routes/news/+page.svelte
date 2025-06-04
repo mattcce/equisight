@@ -1,8 +1,14 @@
 <script lang="ts">
 	import { type Article } from '$lib/api/types';
+	import { setNavContext } from '$lib/classes/nav.svelte';
 	import * as Card from '$lib/components/ui/card';
 
-	let { data }: { data: { articles: Article[] } } = $props();
+	const { data }: { data: { articles: Article[] } } = $props();
+
+	setNavContext({
+		display: 'News',
+		route: '/news'
+	});
 </script>
 
 {#each data.articles as article (article.id)}

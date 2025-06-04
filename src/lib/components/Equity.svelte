@@ -12,7 +12,7 @@
 		tickerData.regularMarketPrice * holding.totalQuantity - holding.totalInvestment;
 </script>
 
-<div>
+<a href={`/holdings/${tickerData.symbol}`}>
 	<div class="grid grid-cols-3 justify-between gap-y-[4px]">
 		<div class="col-span-2">
 			<span class="font-mono font-bold">{tickerData.symbol}</span>
@@ -47,4 +47,4 @@
 	</div>
 
 	<div class="flex flex-row justify-between text-xs [font-variant:small-caps]"></div>
-</div>
+</a>

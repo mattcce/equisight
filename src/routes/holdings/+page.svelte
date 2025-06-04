@@ -1,33 +1,39 @@
 <script lang="ts">
+	import { setNavContext } from '$lib/classes/nav.svelte.js';
 	import ColouredIndicator from '$lib/components/ColouredIndicator.svelte';
 	import Equity from '$lib/components/Equity.svelte';
 	import * as Card from '$lib/components/ui/card';
 	import { Separator } from '$lib/components/ui/separator';
 
-	let { data } = $props();
+	const { data } = $props();
 
-	let currentHoldings = data.tickers
+	setNavContext({
+		display: 'Holdings',
+		route: '/holdings'
+	});
+
+	const currentHoldings = data.tickers
 		.map((t) => data.holdings[t].totalMarketValueAtUnitPrice(data.info[t].regularMarketPrice))
 		.reduce((x, y) => x + y, 0);
-	let portfolioValueAtPreviousClose = data.tickers
+	const portfolioValueAtPreviousClose = data.tickers
 		.map((t) => {
 			const info = data.info[t];
 			const holding = data.holdings[t];
 			return holding.totalMarketValueAtUnitPrice(info.previousClose);
 		})
 		.reduce((x, y) => x + y, 0);
-	let portfolioValueNow = data.tickers
+	const portfolioValueNow = data.tickers
 		.map((t) => {
 			const info = data.info[t];
 			const holding = data.holdings[t];
 			return holding.totalMarketValueAtUnitPrice(info.regularMarketPrice);
 		})
 		.reduce((x, y) => x + y, 0);
-	let portfolioInitialInvestment = data.tickers
+	const portfolioInitialInvestment = data.tickers
 		.map((t) => data.holdings[t].totalInvestment)
 		.reduce((x, y) => x + y);
-	let portfolio1DDelta = portfolioValueNow - portfolioValueAtPreviousClose;
-	let portfolioOverallDelta = portfolioValueNow - portfolioInitialInvestment;
+	const portfolio1DDelta = portfolioValueNow - portfolioValueAtPreviousClose;
+	const portfolioOverallDelta = portfolioValueNow - portfolioInitialInvestment;
 </script>
 
 <Card.Root>
