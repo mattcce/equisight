@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
 import { Holding, Position, Direction } from './holding';
+import { describe, it, expect } from 'vitest';
 
 describe('Holding', () => {
 	it('should return correct total quantity', () => {

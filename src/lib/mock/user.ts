@@ -1,5 +1,5 @@
-import { User } from '$lib/classes/user';
 import { Position, Direction } from '$lib/classes/holding';
+import { User } from '$lib/classes/user';
 
 export const getUser = (): User => {
 	const user = new User('example');

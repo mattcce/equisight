@@ -1,6 +1,7 @@
 <script lang="ts">
-	import * as Card from '$lib/components/ui/card';
 	import { type Article } from '$lib/api/types';
+	import * as Card from '$lib/components/ui/card';
+
 	let { data }: { data: { articles: Article[] } } = $props();
 </script>
 

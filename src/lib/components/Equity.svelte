@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { type TickerInfo } from '$lib/api/types';
-	import { Holding } from '$lib/classes/holding';
-	import ColouredIndicator from './ColouredIndicator.svelte';
-	import BreathingIndicator from '$lib/components/BreathingIndicator.svelte';
 	import { marketIsOpen } from '$lib/api/utils';
+	import { Holding } from '$lib/classes/holding';
+	import BreathingIndicator from '$lib/components/BreathingIndicator.svelte';
+	import ColouredIndicator from './ColouredIndicator.svelte';
 
 	const { tickerData, holding }: { tickerData: TickerInfo; holding: Holding } = $props();
 

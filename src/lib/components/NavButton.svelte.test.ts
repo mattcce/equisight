@@ -1,12 +1,11 @@
+import { goto } from '$app/navigation';
+import NavButton from './NavButton.svelte';
 import { render, fireEvent, screen } from '@testing-library/svelte';
 import { vi, beforeEach, describe, expect, it } from 'vitest';
-import NavButton from './NavButton.svelte';
 
 vi.mock('$app/navigation', () => ({
 	goto: vi.fn()
 }));
-
-import { goto } from '$app/navigation';
 
 describe('NavButton', () => {
 	const defaultProps = {

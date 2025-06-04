@@ -1,6 +1,6 @@
 import { API_DOMAIN } from '$lib/api/locations';
-import { getUser } from '$lib/mock/user';
 import { type Article } from '$lib/api/types';
+import { getUser } from '$lib/mock/user';
 
 const user = getUser();
 

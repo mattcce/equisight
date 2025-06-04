@@ -1,7 +1,7 @@
 <script lang="ts">
-	import '../app.css';
 	import { page } from '$app/state';
 	import NavButton from '$lib/components/NavButton.svelte';
+	import '../app.css';
 
 	let { children } = $props();
 

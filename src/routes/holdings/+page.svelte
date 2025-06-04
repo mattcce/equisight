@@ -1,8 +1,8 @@
 <script lang="ts">
+	import ColouredIndicator from '$lib/components/ColouredIndicator.svelte';
+	import Equity from '$lib/components/Equity.svelte';
 	import * as Card from '$lib/components/ui/card';
 	import { Separator } from '$lib/components/ui/separator';
-	import Equity from '$lib/components/Equity.svelte';
-	import ColouredIndicator from '$lib/components/ColouredIndicator.svelte';
 
 	let { data } = $props();
 
