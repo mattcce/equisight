@@ -3,7 +3,7 @@ import { cubicOut } from 'svelte/easing';
 import type { TransitionConfig } from 'svelte/transition';
 import { twMerge } from 'tailwind-merge';
 
-export function cn(...inputs: ClassValue[]) {
+export function cn(...inputs: ClassValue[]): string {
 	return twMerge(clsx(inputs));
 }
 
@@ -21,7 +21,11 @@ export const flyAndScale = (
 	const style = getComputedStyle(node);
 	const transform = style.transform === 'none' ? '' : style.transform;
 
-	const scaleConversion = (valueA: number, scaleA: [number, number], scaleB: [number, number]) => {
+	const scaleConversion = (
+		valueA: number,
+		scaleA: [number, number],
+		scaleB: [number, number]
+	): number => {
 		const [minA, maxA] = scaleA;
 		const [minB, maxB] = scaleB;
 

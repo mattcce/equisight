@@ -20,7 +20,15 @@ export default ts.config(
 		languageOptions: {
 			globals: { ...globals.browser, ...globals.node }
 		},
-		rules: { 'no-undef': 'off', '@typescript-eslint/explicit-function-return-type': 'error' }
+		rules: {
+			'no-undef': 'off',
+			'@typescript-eslint/explicit-function-return-type': [
+				'error',
+				{
+					allowExpressions: true
+				}
+			]
+		}
 	},
 	{
 		ignores: ['node_modules', '.svelte-kit']
