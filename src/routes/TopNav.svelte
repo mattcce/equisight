@@ -10,7 +10,7 @@
 		<div class="w-xs">
 			{#if navContext.previous}
 				<a href={navContext.previous.route} aria-label="go back">
-					<div class="grow flex flex-row items-center text-xs">
+					<div class="flex grow flex-row items-center text-xs">
 						<svg
 							class="inline"
 							width="14"
