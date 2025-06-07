@@ -7,7 +7,7 @@
 
 <div class="fixed top-0 left-0 z-1000 w-full bg-gray-100 p-3">
 	<div class="flex h-[43px] items-end justify-center">
-		<div class="w-xs">
+		<div class="flex grid w-xs grid-cols-3 flex-col items-end">
 			{#if navContext.previous}
 				<a href={navContext.previous.route} aria-label="go back">
 					<div class="flex grow flex-row items-center text-xs">
@@ -25,13 +25,23 @@
 								clip-rule="evenodd"
 							></path></svg
 						>
-						{navContext.previous.display}
+						{navContext.previous.title}
 					</div>
 				</a>
+			{:else}
+				<div></div>
 			{/if}
-			<div class="grow text-center">
-				{navContext.current === undefined ? 'Unknown' : navContext.current.display}
-			</div>
+
+			{#if navContext.current}
+				<div class="text-center">
+					<div class="-mb-1 text-xs [font-variant:small-caps]">
+						{navContext.current.supplement ?? ''}
+					</div>
+					<div>
+						{navContext.current.title ?? 'Unknown'}
+					</div>
+				</div>
+			{/if}
 		</div>
 	</div>
 </div>

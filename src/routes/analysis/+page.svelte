@@ -2,7 +2,7 @@
 	import { setNavContext } from '$lib/classes/nav.svelte';
 
 	setNavContext({
-		display: 'Analysis',
+		title: 'Analysis',
 		route: '/analysis'
 	});
 </script>

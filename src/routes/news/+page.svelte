@@ -6,7 +6,7 @@
 	const { data }: { data: { articles: Article[] } } = $props();
 
 	setNavContext({
-		display: 'News',
+		title: 'News',
 		route: '/news'
 	});
 </script>

@@ -8,7 +8,7 @@
 	const { data } = $props();
 
 	setNavContext({
-		display: 'Holdings',
+		title: 'Holdings',
 		route: '/holdings'
 	});
 

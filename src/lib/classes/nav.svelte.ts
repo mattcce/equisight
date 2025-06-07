@@ -2,11 +2,12 @@ import { getContext, setContext } from 'svelte';
 
 export type NavContext = {
 	previous?: {
-		display: string;
+		title: string;
 		route: string;
 	};
 	current?: {
-		display: string;
+		title: string;
+		supplement?: string;
 		route: string;
 	};
 };
@@ -24,8 +25,8 @@ export function initNavContext(): void {
 }
 
 export function setNavContext(
-	current: { display: string; route: string },
-	previous?: { display: string; route: string }
+	current: { title: string; supplement?: string; route: string },
+	previous?: { title: string; route: string }
 ): void {
 	const navContext = getNavContext();
 	navContext.current = current;

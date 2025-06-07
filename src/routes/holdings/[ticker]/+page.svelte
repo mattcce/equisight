@@ -8,11 +8,12 @@
 
 	setNavContext(
 		{
-			display: `Ticker: ${data.ticker}`,
+			title: `${data.ticker}`,
+			supplement: 'Ticker',
 			route: `/holdings/${data.ticker}`
 		},
 		{
-			display: 'Holdings',
+			title: 'Holdings',
 			route: '/holdings'
 		}
 	);
