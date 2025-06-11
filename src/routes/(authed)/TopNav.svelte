@@ -1,6 +1,9 @@
 <script lang="ts">
+	import { LogOut } from '@lucide/svelte';
+
+	import { logout } from '$lib/api/auth.svelte';
 	import { type NavContext, getNavContext } from '$lib/classes/nav.svelte';
-	import '../app.css';
+	import Button from '$lib/components/ui/button/button.svelte';
 
 	const navContext: NavContext = getNavContext();
 </script>
@@ -41,7 +44,11 @@
 						{navContext.current.title ?? 'Unknown'}
 					</div>
 				</div>
+			{:else}
+				<div></div>
 			{/if}
+
+			<Button class="ml-auto w-12" variant="ghost" onclick={() => logout()}><LogOut /></Button>
 		</div>
 	</div>
 </div>

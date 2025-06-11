@@ -16,5 +16,7 @@
 				"parser": "svelte"
 			}
 		}
-	]
+	],
+	"importOrder": ["^@(.*)$", "<THIRD_PARTY_MODULES>", "^\\$(.*)$", "^[./]"],
+	"importOrderSeparation": true
 }

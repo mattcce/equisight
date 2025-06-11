@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { cn } from '$lib/utils.js';
+
 	import { type Variant, badgeVariants } from './index.js';
 
 	let className: string | undefined | null = undefined;

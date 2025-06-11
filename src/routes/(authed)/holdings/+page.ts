@@ -1,11 +1,11 @@
-import { API_DOMAIN } from '$lib/api/locations.js';
+import { apiClient } from '$lib/api/client';
 import { type TickerInfo } from '$lib/api/types';
 import { Holding } from '$lib/classes/holding';
 import { getUser } from '$lib/mock/user';
 
 const user = getUser();
 
-export async function load({ fetch }): Promise<{
+export async function load(): Promise<{
 	tickers: string[];
 	info: { [ticker: string]: TickerInfo };
 	holdings: { [ticker: string]: Holding };
@@ -14,7 +14,7 @@ export async function load({ fetch }): Promise<{
 
 	const tickersInfo = await Promise.all(
 		tickers.map((t) =>
-			fetch(`http://${API_DOMAIN}/ticker/${t}/info`, { method: 'GET' })
+			apiClient(`/ticker/${t}/info`, { method: 'GET', credentials: 'include' })
 				.then((r) => r.json())
 				.then((i) => {
 					return { [t]: i };

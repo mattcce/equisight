@@ -1,4 +1,4 @@
-import { API_DOMAIN } from '$lib/api/locations';
+import { apiClient } from '$lib/api/client';
 import { type Article } from '$lib/api/types';
 import { getUser } from '$lib/mock/user';
 
@@ -9,8 +9,9 @@ export async function load(): Promise<{ articles: Article[] }> {
 
 	const responses = await Promise.all(
 		tickers.map((t) =>
-			fetch(`http://${API_DOMAIN}/ticker/${t}/news?count=5`, {
-				method: 'GET'
+			apiClient(`/ticker/${t}/news?count=5`, {
+				method: 'GET',
+				credentials: 'include'
 			}).then((r) => r.json())
 		)
 	);
