@@ -23,7 +23,7 @@
 
 	$effect(() => {
 		if (!isAuthenticated) {
-			goto(`/login?redirectTo=${window.location.href}`);
+			goto(`/login?redirectTo=${page.url.pathname}`);
 		}
 	});
 </script>

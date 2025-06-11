@@ -66,7 +66,6 @@
 		>
 
 		<Button
-			class="mb-6"
 			variant="outline"
 			onclick={() => {
 				const { username, password } = get(formData);

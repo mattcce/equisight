@@ -9,7 +9,7 @@ export const authStore = $state({ isAuthenticated: false });
 export function handleUnauthorised(): void {
 	authStore.isAuthenticated = false;
 
-	// call logout route
+	// call logout route to invalidate session
 	fetch(`http://${PUBLIC_API_DOMAIN}/auth/logout`, { method: 'POST', credentials: 'include' });
 }
 
@@ -28,14 +28,13 @@ export async function login(
 		body: new URLSearchParams({
 			username,
 			password
-			// username: 'user000@example.com',
-			// password: 'password1'
 		}),
 		credentials: 'include'
 	});
 
 	if (response.ok) {
 		authStore.isAuthenticated = true;
+
 		toast.success('Logged in!');
 		goto(page.url.searchParams.get('redirectTo') ?? '/');
 		if (onSuccessfulCallback) {

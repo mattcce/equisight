@@ -1,4 +1,3 @@
-// import { redirect } from '@sveltejs/kit';
 import { superValidate, type SuperValidated } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
 
