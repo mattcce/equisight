@@ -20,6 +20,6 @@ export type TickerInfo = {
 };
 
 export type PriceHistoryEntry = {
-	timestamp: string;
+	timestamp: Date;
 	close: number;
 };

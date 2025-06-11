@@ -14,7 +14,7 @@ export async function load(): Promise<{
 
 	const tickersInfo = await Promise.all(
 		tickers.map((t) =>
-			apiClient(`/ticker/${t}/info`, { method: 'GET', credentials: 'include' })
+			apiClient(`/ticker/${t}/info`, { method: 'GET' })
 				.then((r) => r.json())
 				.then((i) => {
 					return { [t]: i };

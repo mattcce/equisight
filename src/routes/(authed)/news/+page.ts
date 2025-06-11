@@ -10,8 +10,7 @@ export async function load(): Promise<{ articles: Article[] }> {
 	const responses = await Promise.all(
 		tickers.map((t) =>
 			apiClient(`/ticker/${t}/news?count=5`, {
-				method: 'GET',
-				credentials: 'include'
+				method: 'GET'
 			}).then((r) => r.json())
 		)
 	);

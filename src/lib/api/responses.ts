@@ -8,4 +8,6 @@ export type tickerInfoResponsePayload = TickerInfo;
 
 export type tickerIntradayResponsePayload = {
 	intraday: PriceHistoryEntry[];
+	marketOpen: number;
+	marketClose: number;
 };
