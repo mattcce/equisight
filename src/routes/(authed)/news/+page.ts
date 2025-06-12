@@ -4,8 +4,8 @@ import { getUser } from '$lib/mock/user';
 
 const user = getUser();
 
-export async function load(): Promise<{ articles: Article[] }> {
-	const tickers = user.getAllHoldingsTickers();
+export async function load(): Promise<{ queryTimestamp: Date; articles: Article[] }> {
+	const tickers = user.getAllWatchlistedTickers();
 
 	const responses = await Promise.all(
 		tickers.map((t) =>
@@ -18,5 +18,5 @@ export async function load(): Promise<{ articles: Article[] }> {
 	const articles = responses.flatMap((a) => a.articles);
 	articles.sort((a1, a2) => Number(a2.timestamp) - Number(a1.timestamp));
 
-	return { articles };
+	return { queryTimestamp: new Date(), articles };
 }

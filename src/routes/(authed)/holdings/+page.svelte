@@ -13,24 +13,24 @@
 	});
 
 	const currentHoldings = data.tickers
-		.map((t) => data.holdings[t].totalMarketValueAtUnitPrice(data.info[t].regularMarketPrice))
+		.map((t) => data.watchlist[t].totalMarketValueAtUnitPrice(data.info[t].regularMarketPrice))
 		.reduce((x, y) => x + y, 0);
 	const portfolioValueAtPreviousClose = data.tickers
 		.map((t) => {
 			const info = data.info[t];
-			const holding = data.holdings[t];
+			const holding = data.watchlist[t];
 			return holding.totalMarketValueAtUnitPrice(info.previousClose);
 		})
 		.reduce((x, y) => x + y, 0);
 	const portfolioValueNow = data.tickers
 		.map((t) => {
 			const info = data.info[t];
-			const holding = data.holdings[t];
+			const holding = data.watchlist[t];
 			return holding.totalMarketValueAtUnitPrice(info.regularMarketPrice);
 		})
 		.reduce((x, y) => x + y, 0);
 	const portfolioInitialInvestment = data.tickers
-		.map((t) => data.holdings[t].totalInvestment)
+		.map((t) => data.watchlist[t].totalInvestment)
 		.reduce((x, y) => x + y);
 	const portfolio1DDelta = portfolioValueNow - portfolioValueAtPreviousClose;
 	const portfolioOverallDelta = portfolioValueNow - portfolioInitialInvestment;
@@ -70,5 +70,5 @@
 <div class="text-sm font-semibold [font-variant:small-caps]">Open Positions</div>
 
 {#each data.tickers as ticker (ticker)}
-	<Equity tickerData={data.info[ticker]} holding={data.holdings[ticker]} />
+	<Equity tickerData={data.info[ticker]} holding={data.watchlist[ticker]} />
 {/each}

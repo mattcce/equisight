@@ -49,7 +49,9 @@
 		{#each displayRows as row (row.key)}
 			<Table.Row>
 				<Table.Cell class="w-1/2 text-right text-xs text-gray-600">{row.display}</Table.Cell>
-				<Table.Cell class="text-xs">{formatNumber(currentReport[row.key], 3)}</Table.Cell>
+				<Table.Cell class="text-xs"
+					>{formatNumber(currentReport![row.key as keyof FinancialReport] as number, 3)}</Table.Cell
+				>
 			</Table.Row>
 		{/each}
 	</Table.Body>

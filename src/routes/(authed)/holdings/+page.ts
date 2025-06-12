@@ -8,9 +8,9 @@ const user = getUser();
 export async function load(): Promise<{
 	tickers: string[];
 	info: { [ticker: string]: TickerInfo };
-	holdings: { [ticker: string]: Holding };
+	watchlist: { [ticker: string]: Holding };
 }> {
-	const tickers: string[] = user.getAllHoldingsTickers();
+	const tickers: string[] = user.getAllWatchlistedTickers();
 
 	const tickersInfo = await Promise.all(
 		tickers.map((t) =>
@@ -25,6 +25,6 @@ export async function load(): Promise<{
 	return {
 		tickers,
 		info: Object.assign({}, ...tickersInfo),
-		holdings: user.holdings
+		watchlist: user.watchlist
 	};
 }

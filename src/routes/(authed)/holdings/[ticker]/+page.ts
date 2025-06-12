@@ -19,7 +19,7 @@ export async function load({ params }): Promise<{
 	annualReports: FinancialReport[];
 }> {
 	const ticker = params.ticker;
-	const holding = user.holdings[ticker];
+	const holding = user.watchlist[ticker];
 
 	const info = await apiClient(`/ticker/${ticker}/info`, {
 		method: 'GET'

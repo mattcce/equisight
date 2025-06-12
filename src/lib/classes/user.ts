@@ -2,7 +2,7 @@ import { Holding, Position } from './holding';
 
 export class User {
 	readonly #identifier: string;
-	holdings: { [ticker: string]: Holding } = {};
+	watchlist: { [ticker: string]: Holding } = {};
 
 	constructor(identifier: string) {
 		this.#identifier = identifier;
@@ -12,15 +12,24 @@ export class User {
 		return this.#identifier;
 	}
 
-	getAllHoldingsTickers(): string[] {
-		return Object.keys(this.holdings);
+	getAllWatchlistedTickers(): string[] {
+		return Object.keys(this.watchlist);
 	}
 
 	addPosition(ticker: string, position: Position): void {
-		if (!Object.prototype.hasOwnProperty.call(this.holdings, ticker)) {
-			this.holdings[ticker] = new Holding(ticker);
+		if (!Object.prototype.hasOwnProperty.call(this.watchlist, ticker)) {
+			this.watchlist[ticker] = new Holding(ticker);
 		}
 
-		this.holdings[ticker].addOpenPosition(position);
+		this.watchlist[ticker].addOpenPosition(position);
+	}
+
+	addTicker(ticker: string): boolean {
+		if (Object.prototype.hasOwnProperty.call(this.watchlist, ticker)) {
+			return false;
+		}
+
+		this.watchlist[ticker] = new Holding(ticker);
+		return true;
 	}
 }
