@@ -1,3 +1,5 @@
+import { format, PeriodType } from '@layerstack/utils';
+
 import { type ClassValue, clsx } from 'clsx';
 import { cubicOut } from 'svelte/easing';
 import type { TransitionConfig } from 'svelte/transition';
@@ -58,3 +60,27 @@ export const flyAndScale = (
 		easing: cubicOut
 	};
 };
+
+export function formatDate(d: Date): string {
+	return format(d, PeriodType.Day, { variant: 'long' });
+}
+
+export function formatDateTime(d: Date): string {
+	return format(d, PeriodType.DayTime, { variant: 'long' });
+}
+
+export function formatNumber(num: number, digits: number): string {
+	if (num < 1) {
+		return num.toFixed(digits);
+	}
+
+	const lookup = [
+		{ value: 1, symbol: '' },
+		{ value: 1e3, symbol: 'k' },
+		{ value: 1e6, symbol: 'M' },
+		{ value: 1e9, symbol: 'B' }
+	];
+	const regexp = /\.0+$|(?<=\.[0-9]*[1-9])0+$/;
+	const item = lookup.findLast((item) => num >= item.value);
+	return item ? (num / item.value).toFixed(digits).replace(regexp, '').concat(item.symbol) : '0';
+}

@@ -3,21 +3,19 @@
 
 	import { cn } from '$lib/utils.js';
 
-	type $Props = SeparatorPrimitive.Props;
-
-	let className: $Props['class'] = undefined;
-	export let orientation: $Props['orientation'] = 'horizontal';
-	export let decorative: $Props['decorative'] = undefined;
-	export { className as class };
+	let {
+		ref = $bindable(null),
+		class: className,
+		...restProps
+	}: SeparatorPrimitive.RootProps = $props();
 </script>
 
 <SeparatorPrimitive.Root
+	bind:ref
+	data-slot="separator"
 	class={cn(
-		'shrink-0 bg-border',
-		orientation === 'horizontal' ? 'h-[1px] w-full' : 'min-h-full w-[1px]',
+		'shrink-0 bg-border data-[orientation=horizontal]:h-px data-[orientation=horizontal]:w-full data-[orientation=vertical]:h-full data-[orientation=vertical]:w-px',
 		className
 	)}
-	{orientation}
-	{decorative}
-	{...$$restProps}
+	{...restProps}
 />

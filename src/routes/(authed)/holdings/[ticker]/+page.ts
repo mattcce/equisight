@@ -1,7 +1,8 @@
 import { apiClient } from '$lib/api/client';
-import { type TickerInfo, type PriceHistoryEntry } from '$lib/api/types';
+import type { TickerInfo, PriceHistoryEntry, FinancialReport } from '$lib/api/types';
 import { Holding } from '$lib/classes/holding';
 import { getUser } from '$lib/mock/user';
+import { formatDate } from '$lib/utils';
 
 const user = getUser();
 
@@ -14,6 +15,8 @@ export async function load({ params }): Promise<{
 	intradayPrices: PriceHistoryEntry[];
 	intradayMin: number;
 	intradayMax: number;
+	quarterlyReports: FinancialReport[];
+	annualReports: FinancialReport[];
 }> {
 	const ticker = params.ticker;
 	const holding = user.holdings[ticker];
@@ -30,6 +33,35 @@ export async function load({ params }): Promise<{
 		await apiClient(`/ticker/${ticker}/intraday`, {
 			method: 'GET'
 		}).then((r) => r.json());
+
+	const quarterlyReports: FinancialReport[] = await apiClient(
+		`/ticker/${ticker}/quarterly-reports`,
+		{
+			method: 'GET'
+		}
+	)
+		.then((r) => r.json())
+		.then((r) => r.quarterlyReports)
+		.then((rs) =>
+			rs.map((r) => {
+				r.date = new Date(r.quarterEndDate * 1000);
+				r.title = formatDate(r.date);
+				return r;
+			})
+		);
+
+	const annualReports: FinancialReport[] = await apiClient(`/ticker/${ticker}/annual-reports`, {
+		method: 'GET'
+	})
+		.then((r) => r.json())
+		.then((r) => r.annualReports)
+		.then((rs) =>
+			rs.map((r) => {
+				r.date = new Date(r.yearEndDate * 1000);
+				r.title = formatDate(r.date);
+				return r;
+			})
+		);
 
 	const prices = intraday.map((e) => e.close);
 
@@ -80,6 +112,8 @@ export async function load({ params }): Promise<{
 		marketClose: new Date(marketClose * 1000),
 		intradayPrices,
 		intradayMin,
-		intradayMax
+		intradayMax,
+		quarterlyReports,
+		annualReports
 	};
 }

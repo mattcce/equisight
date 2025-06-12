@@ -5,7 +5,7 @@ export type Article = {
 	summary: string;
 	canonicalUrl: string;
 	thumbnailUrl: string;
-	timestamp: string;
+	timestamp: Date;
 };
 
 export type TickerInfo = {
@@ -22,4 +22,24 @@ export type TickerInfo = {
 export type PriceHistoryEntry = {
 	timestamp: Date;
 	close: number;
+};
+
+export type FinancialReport = {
+	title: string;
+	revenue: number;
+	date: Date;
+	eps: number;
+	ebitda: number;
+	netIncome: number;
+	totalAssets: number;
+	totalLiabilities: number;
+	shareholderEquity: number;
+	longTermDebt: number;
+	cashAndEquivalents: number;
+	operatingCashFlow: number;
+	freeCashFlow: number;
+	grossMargin: number;
+	roe: number;
+	roa: number;
+	debtToEquity: number;
 };
