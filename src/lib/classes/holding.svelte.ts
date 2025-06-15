@@ -1,6 +1,6 @@
 export class Holding {
 	readonly ticker: string;
-	#positions: Position[];
+	#positions: Position[] = $state([]);
 
 	constructor(ticker: string, openPositions?: Position[]) {
 		this.ticker = ticker;
@@ -31,12 +31,15 @@ export class Holding {
 		this.#positions.push(position);
 	}
 
-	removeOpenPositionAtIndex(index: number): void {
+	removeOpenPosition(position: Position): boolean {
+		const index = this.#positions.indexOf(position);
+
 		if (index < 0 || index >= this.#positions.length) {
-			throw new RangeError();
+			return false;
 		}
 
 		this.#positions = this.#positions.toSpliced(index, 1);
+		return true;
 	}
 }
 
@@ -45,17 +48,22 @@ export enum Direction {
 	SELL
 }
 
+export const directionToString = {
+	[Direction.BUY]: 'BUY',
+	[Direction.SELL]: 'SELL'
+};
+
 export class Position {
 	readonly direction: Direction;
 	readonly quantity: number;
 	readonly unitCost: number;
 	readonly createdAt: Date;
 
-	constructor(direction: Direction, quantity: number, unitCost: number, createdAt: Date) {
+	constructor(direction: Direction, quantity: number, unitCost: number, createdAt?: Date) {
 		this.direction = direction;
 		this.quantity = quantity;
 		this.unitCost = unitCost;
-		this.createdAt = createdAt;
+		this.createdAt = createdAt ?? new Date();
 	}
 
 	isBuy(): boolean {

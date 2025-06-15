@@ -84,3 +84,29 @@ export function formatNumber(num: number, digits: number): string {
 	const item = lookup.findLast((item) => num >= item.value);
 	return item ? (num / item.value).toFixed(digits).replace(regexp, '').concat(item.symbol) : '0';
 }
+
+export function toISOStringWithTZ(date: Date): string {
+	const tzo = -date.getTimezoneOffset(),
+		dif = tzo >= 0 ? '+' : '-',
+		pad = function (num: number): string {
+			return (num < 10 ? '0' : '') + num;
+		};
+
+	return (
+		date.getFullYear() +
+		'-' +
+		pad(date.getMonth() + 1) +
+		'-' +
+		pad(date.getDate()) +
+		'T' +
+		pad(date.getHours()) +
+		':' +
+		pad(date.getMinutes()) +
+		':' +
+		pad(date.getSeconds()) +
+		dif +
+		pad(Math.floor(Math.abs(tzo) / 60)) +
+		':' +
+		pad(Math.abs(tzo) % 60)
+	);
+}

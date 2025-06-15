@@ -1,15 +1,10 @@
 import { apiClient } from '$lib/api/client';
-import { Holding } from '$lib/classes/holding';
 import type { TickerInfo, PriceHistoryEntry, FinancialReport } from '$lib/classes/types';
-import { getUser } from '$lib/mock/user';
 import { formatDate } from '$lib/utils';
-
-const user = getUser();
 
 export async function load({ params }): Promise<{
 	ticker: string;
 	info: TickerInfo;
-	holding: Holding;
 	marketOpen: Date;
 	marketClose: Date;
 	intradayPrices: PriceHistoryEntry[];
@@ -19,7 +14,6 @@ export async function load({ params }): Promise<{
 	annualReports: FinancialReport[];
 }> {
 	const ticker = params.ticker;
-	const holding = user.watchlist[ticker];
 
 	const info = await apiClient(`/ticker/${ticker}/info`, {
 		method: 'GET'
@@ -107,7 +101,6 @@ export async function load({ params }): Promise<{
 	return {
 		ticker,
 		info,
-		holding,
 		marketOpen: new Date(marketOpen * 1000),
 		marketClose: new Date(marketClose * 1000),
 		intradayPrices,

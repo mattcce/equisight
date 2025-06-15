@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 
-import { Holding, Position, Direction } from './holding';
+import { Holding, Position, Direction } from './holding.svelte';
 
 describe('Holding', () => {
 	it('should return correct total quantity', () => {
@@ -67,7 +67,7 @@ describe('Holding', () => {
 
 		expect(holding.totalInvestment).toBe(24);
 
-		holding.removeOpenPositionAtIndex(2);
+		holding.removeOpenPosition(holding.openPositions[2]);
 
 		expect(holding.totalInvestment).toBe(18);
 	});

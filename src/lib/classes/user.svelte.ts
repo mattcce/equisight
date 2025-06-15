@@ -1,14 +1,69 @@
 import { apiClient } from '$lib/api/mock-client';
 
-import { Direction, Holding, Position } from './holding';
+import { Direction, Holding, Position } from './holding.svelte';
 
-export const userStore = $state({ user: undefined });
+export class User {
+	readonly #identifier: string;
+	#watchlist: { [ticker: string]: Holding } = $state({});
 
-export async function initialiseCurrentUser(): void {
-	if (userStore.user) {
-		return;
+	constructor(identifier: string) {
+		this.#identifier = identifier;
 	}
 
+	get identifier(): string {
+		return this.#identifier;
+	}
+
+	get watchlist(): { [ticker: string]: Holding } {
+		return this.#watchlist;
+	}
+
+	get watchlistTickers(): string[] {
+		return Object.keys(this.#watchlist);
+	}
+
+	addHolding(ticker: string, holding: Holding): void {
+		if (Object.prototype.hasOwnProperty.call(this.#watchlist, ticker)) {
+			throw new Error('Cannot add multiple holdings to the same ticker.');
+		}
+
+		this.#watchlist[ticker] = holding;
+	}
+
+	addPosition(ticker: string, position: Position): void {
+		if (!Object.prototype.hasOwnProperty.call(this.watchlist, ticker)) {
+			this.#watchlist[ticker] = new Holding(ticker);
+		}
+
+		this.#watchlist[ticker].addOpenPosition(position);
+	}
+
+	addTicker(ticker: string): boolean {
+		if (Object.prototype.hasOwnProperty.call(this.#watchlist, ticker)) {
+			return false;
+		}
+
+		this.#watchlist[ticker] = new Holding(ticker);
+		return true;
+	}
+
+	removeTicker(ticker: string): boolean {
+		if (!Object.prototype.hasOwnProperty.call(this.#watchlist, ticker)) {
+			return false;
+		}
+
+		delete this.#watchlist[ticker];
+		return true;
+	}
+
+	removePosition(ticker: string, position: Position): boolean {
+		return this.#watchlist[ticker].removeOpenPosition(position);
+	}
+}
+
+export const user: User = $state(await initialiseUser());
+
+export async function initialiseUser(): Promise<User> {
 	const user = new User('mock');
 
 	const watchlist = await apiClient(`/users/me/watchlist`, { method: 'GET' })
@@ -45,60 +100,5 @@ export async function initialiseCurrentUser(): void {
 
 	holdings.forEach((h) => user.addHolding(h.ticker, h));
 
-	userStore.user = user;
-}
-
-export class User {
-	readonly #identifier: string;
-	#watchlist: { [ticker: string]: Holding } = $state({});
-
-	constructor(identifier: string) {
-		this.#identifier = identifier;
-	}
-
-	get identifier(): string {
-		return this.#identifier;
-	}
-
-	get watchlist(): { [ticker: string]: Holding } {
-		return this.#watchlist;
-	}
-
-	get watchlistTickers(): string[] {
-		return Object.keys(this.#watchlist);
-	}
-
-	addHolding(ticker: string, holding: Holding): void {
-		if (Object.prototype.hasOwnProperty.call(this.watchlist, ticker)) {
-			throw new Error('Cannot add multiple holdings to the same ticker.');
-		}
-
-		this.watchlist[ticker] = holding;
-	}
-
-	addPosition(ticker: string, position: Position): void {
-		if (!Object.prototype.hasOwnProperty.call(this.watchlist, ticker)) {
-			this.watchlist[ticker] = new Holding(ticker);
-		}
-
-		this.watchlist[ticker].addOpenPosition(position);
-	}
-
-	addTicker(ticker: string): boolean {
-		if (Object.prototype.hasOwnProperty.call(this.watchlist, ticker)) {
-			return false;
-		}
-
-		this.watchlist[ticker] = new Holding(ticker);
-		return true;
-	}
-
-	removeTicker(ticker: string): boolean {
-		if (!Object.prototype.hasOwnProperty.call(this.watchlist, ticker)) {
-			return false;
-		}
-
-		delete this.watchlist[ticker];
-		return true;
-	}
+	return user;
 }

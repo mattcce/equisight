@@ -11,7 +11,7 @@
 		icon: string;
 	} = $props();
 
-	let isSelected = $derived(currentLocation == display.toLowerCase());
+	let isSelected = $derived(currentLocation === display.toLowerCase());
 	let isHovered = $state(false);
 </script>
 

@@ -1,21 +1,31 @@
 <script lang="ts">
+	import { Check, Edit, Plus } from '@lucide/svelte';
+
 	import { scaleLinear, scaleTime } from 'd3-scale';
 	import { Highlight, Chart, Svg, Axis, Spline, Grid, Tooltip, Text } from 'layerchart';
+	import { toast } from 'svelte-sonner';
+	import { fade } from 'svelte/transition';
 
 	import { marketIsOpen } from '$lib/api/utils';
-	import { setNavContext } from '$lib/classes/nav.svelte.js';
+	import { Direction, Position } from '$lib/classes/holding.svelte';
+	import { setNavContext } from '$lib/classes/nav.svelte';
+	import { user } from '$lib/classes/user.svelte';
 	import BreathingIndicator from '$lib/components/BreathingIndicator.svelte';
+	import { Button, buttonVariants } from '$lib/components/ui/button';
+	import * as Drawer from '$lib/components/ui/drawer';
+	import { Input } from '$lib/components/ui/input';
+	import { Label } from '$lib/components/ui/label';
 	import Separator from '$lib/components/ui/separator/separator.svelte';
 	import * as Tabs from '$lib/components/ui/tabs';
-	import { formatDateTime } from '$lib/utils';
+	import { formatDateTime, toISOStringWithTZ } from '$lib/utils';
 
+	import HoldingsViewer from './HoldingsViewer.svelte';
 	import ReportViewer from './ReportViewer.svelte';
 
 	const { data } = $props();
 	const {
 		ticker,
 		info,
-		// holding,
 		marketOpen,
 		marketClose,
 		intradayPrices,
@@ -39,6 +49,25 @@
 
 	let priceHistoryDisplayPeriod = $state('1D');
 	let financialReportDisplayPeriod = $state('quarterly');
+	let isEditingHoldings = $state(false);
+
+	const now = new Date();
+	let inputNewPosition = $state({
+		direction: 'BUY',
+		quantity: '0',
+		unitCost: '0',
+		createdAt: toISOStringWithTZ(now)
+	});
+
+	function resetInputNewPosition(): void {
+		const now = new Date();
+		inputNewPosition = {
+			direction: 'BUY',
+			quantity: '0',
+			unitCost: '0',
+			createdAt: toISOStringWithTZ(now)
+		};
+	}
 </script>
 
 <div class="flex flex-row items-center gap-x-1">
@@ -126,6 +155,104 @@
 		</Tooltip.Root>
 	</Chart>
 </div>
+
+<Separator />
+
+<div class="flex flex-row items-center justify-between">
+	<span class="text-sm font-semibold">Holdings</span>
+	<button onclick={() => (isEditingHoldings = !isEditingHoldings)} class="h-8 py-2 pl-2">
+		{#if isEditingHoldings}
+			<span in:fade={{ delay: 250, duration: 250 }} out:fade={{ duration: 250 }}>
+				<Check class="size-4" />
+			</span>
+		{:else}
+			<span in:fade={{ delay: 250, duration: 250 }} out:fade={{ duration: 250 }}>
+				<Edit class="size-4" />
+			</span>
+		{/if}
+	</button>
+</div>
+
+<div>
+	<HoldingsViewer {isEditingHoldings} {ticker} />
+</div>
+
+<Drawer.Root>
+	<Drawer.Trigger>
+		<div class="flex w-xs flex-row items-center justify-center">
+			<Button class="grow" variant="ghost">
+				<div class="flex flex-row items-center justify-center space-x-1 text-gray-600">
+					<Plus class="size-4" /> <span class="inline-block text-xs">Add New</span>
+				</div>
+			</Button>
+		</div>
+	</Drawer.Trigger>
+
+	<Drawer.Content class="z-1001 mx-auto w-xs">
+		<Drawer.Header>
+			<Drawer.Title>Add New Position</Drawer.Title>
+			<Drawer.Description>Add new position for ticker {ticker}.</Drawer.Description>
+		</Drawer.Header>
+
+		<div class="grid grid-cols-3 items-center justify-center gap-2 p-4">
+			<Label class="mx-auto" for="direction">Direction</Label>
+
+			<Tabs.Root class="col-span-2 mx-auto" bind:value={inputNewPosition.direction}>
+				<Tabs.List>
+					<Tabs.Trigger class="text-xs font-bold text-green-600" value="BUY">BUY</Tabs.Trigger>
+					<Tabs.Trigger class="text-xs font-bold text-red-600" value="SELL">SELL</Tabs.Trigger>
+				</Tabs.List>
+			</Tabs.Root>
+
+			<Label class="mx-auto" for="quantity">Quantity</Label>
+
+			<Input class="col-span-2" bind:value={inputNewPosition.quantity} />
+
+			<Label class="mx-auto" for="unit-cost">Unit Cost</Label>
+
+			<Input class="col-span-2" bind:value={inputNewPosition.unitCost} />
+
+			<Label class="mx-auto" for="Created At">Created At</Label>
+
+			<Input class="col-span-2" bind:value={inputNewPosition.createdAt} />
+			<p class="col-span-3 text-right text-xs text-muted-foreground">
+				Format: ISO8601 <br />
+
+				YYYY-MM-DDTHH:MM:SS+OO:OO
+			</p>
+		</div>
+
+		<div class="p-4 pb-0"></div>
+		<Drawer.Footer>
+			<Drawer.Close
+				onclick={() => {
+					const direction = inputNewPosition.direction === 'BUY' ? Direction.BUY : Direction.SELL;
+					const quantity = Number(inputNewPosition.quantity);
+					const unitCost = Number(inputNewPosition.unitCost);
+					const createdAt = new Date(Date.parse(inputNewPosition.createdAt));
+
+					if (quantity === 0) {
+						toast.error('Quantity cannot be 0.');
+						return;
+					}
+
+					if (unitCost === 0) {
+						toast.error('Quantity cannot be 0.');
+						return;
+					}
+
+					const newPosition = new Position(direction, quantity, unitCost, createdAt);
+
+					user.watchlist[ticker].addOpenPosition(newPosition);
+
+					resetInputNewPosition();
+				}}
+				class={buttonVariants({ variant: 'default' })}>Confirm</Drawer.Close
+			>
+			<Drawer.Close class="text-sm font-semibold">Cancel</Drawer.Close>
+		</Drawer.Footer>
+	</Drawer.Content>
+</Drawer.Root>
 
 <Separator />
 

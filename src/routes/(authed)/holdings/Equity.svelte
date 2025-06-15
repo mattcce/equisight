@@ -1,16 +1,17 @@
 <script lang="ts">
 	import { marketIsOpen } from '$lib/api/utils';
-	import { Holding } from '$lib/classes/holding';
 	import { type TickerInfo } from '$lib/classes/types';
+	import { user } from '$lib/classes/user.svelte';
 	import BreathingIndicator from '$lib/components/BreathingIndicator.svelte';
 	import ColouredIndicator from '$lib/components/ColouredIndicator.svelte';
 
-	const { tickerData, holding }: { tickerData: TickerInfo; holding: Holding } = $props();
+	const { ticker, tickerData }: { ticker: string; tickerData: TickerInfo } = $props();
 
 	const dailyPercentageChange =
 		(tickerData?.regularMarketPrice ?? 0) - (tickerData?.previousClose ?? 0);
 	const unrealisedPL =
-		(tickerData?.regularMarketPrice ?? 0) * holding.totalQuantity - holding.totalInvestment;
+		(tickerData?.regularMarketPrice ?? 0) * user.watchlist[ticker].totalQuantity -
+		user.watchlist[ticker].totalInvestment;
 </script>
 
 <div class="h-16 grow">
@@ -44,7 +45,9 @@
 			<div class="col-span-2 ml-auto text-xs">
 				<ColouredIndicator value={unrealisedPL} prefix="{tickerData.currency} " />
 				{tickerData.currency}
-				{holding.totalMarketValueAtUnitPrice(tickerData.regularMarketPrice).toFixed(2)}
+				{user.watchlist[ticker]
+					.totalMarketValueAtUnitPrice(tickerData.regularMarketPrice)
+					.toFixed(2)}
 			</div>
 		</div>
 

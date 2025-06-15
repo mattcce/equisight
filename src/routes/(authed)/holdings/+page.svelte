@@ -1,6 +1,5 @@
 <script lang="ts">
-	import { Plus, X } from '@lucide/svelte';
-	import { Check, Edit } from '@lucide/svelte';
+	import { Plus, X, Check, Edit } from '@lucide/svelte';
 
 	import { toast } from 'svelte-sonner';
 	import { slide, fade } from 'svelte/transition';
@@ -8,6 +7,7 @@
 	import { invalidate } from '$app/navigation';
 	import { PUBLIC_DATA_REFRESHING } from '$env/static/public';
 	import { setNavContext } from '$lib/classes/nav.svelte.js';
+	import { user } from '$lib/classes/user.svelte';
 	import ColouredIndicator from '$lib/components/ColouredIndicator.svelte';
 	import Button, { buttonVariants } from '$lib/components/ui/button/button.svelte';
 	import * as Card from '$lib/components/ui/card';
@@ -18,8 +18,6 @@
 	import Equity from './Equity.svelte';
 
 	const { data } = $props();
-
-	const { user } = data;
 
 	let tickers = $derived(user.watchlistTickers);
 	let info = $derived(data.info);
@@ -123,7 +121,7 @@
 			class={['grow', isEditingWatchlist ? 'pointer-events-none' : 'pointer-events-auto']}
 			href={`/holdings/${ticker}`}
 		>
-			<Equity tickerData={info[ticker]} holding={user.watchlist[ticker]} {isEditingWatchlist} />
+			<Equity {ticker} tickerData={info[ticker]} />
 		</a>
 
 		{#if isEditingWatchlist}
@@ -166,6 +164,7 @@
 			<Drawer.Close
 				onclick={() => {
 					const success = user.addTicker(inputNewTicker);
+					inputNewTicker = '';
 
 					if (!success) {
 						toast.warning(`Ticker already in watchlist: ${inputNewTicker}.`);

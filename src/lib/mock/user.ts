@@ -1,4 +1,4 @@
-import { Position, Direction } from '$lib/classes/holding';
+import { Position, Direction } from '$lib/classes/holding.svelte';
 import { User } from '$lib/classes/user.svelte';
 
 export const getUser = (): User => {
