@@ -1,6 +1,6 @@
 import { apiClient } from '$lib/api/client';
-import type { TickerInfo, PriceHistoryEntry, FinancialReport } from '$lib/api/types';
 import { Holding } from '$lib/classes/holding';
+import type { TickerInfo, PriceHistoryEntry, FinancialReport } from '$lib/classes/types';
 import { getUser } from '$lib/mock/user';
 import { formatDate } from '$lib/utils';
 

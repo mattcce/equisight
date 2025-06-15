@@ -24,6 +24,7 @@ export default ts.config(
 		},
 		rules: {
 			'no-undef': 'off',
+			eqeqeq: ['error', 'always'],
 			'@typescript-eslint/explicit-function-return-type': [
 				'error',
 				{

@@ -1,5 +1,5 @@
 import { apiClient } from '$lib/api/client';
-import type { Article } from '$lib/api/types';
+import type { Article } from '$lib/classes/types';
 
 export type NewsQuery = {
 	completedTimestamp: number;

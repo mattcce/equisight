@@ -1,37 +1,72 @@
 <script lang="ts">
+	import { Plus, X } from '@lucide/svelte';
+	import { Check, Edit } from '@lucide/svelte';
+
+	import { toast } from 'svelte-sonner';
+	import { slide, fade } from 'svelte/transition';
+
+	import { invalidate } from '$app/navigation';
+	import { PUBLIC_DATA_REFRESHING } from '$env/static/public';
 	import { setNavContext } from '$lib/classes/nav.svelte.js';
 	import ColouredIndicator from '$lib/components/ColouredIndicator.svelte';
-	import Equity from '$lib/components/Equity.svelte';
+	import Button, { buttonVariants } from '$lib/components/ui/button/button.svelte';
 	import * as Card from '$lib/components/ui/card';
+	import * as Drawer from '$lib/components/ui/drawer';
+	import Input from '$lib/components/ui/input/input.svelte';
 	import { Separator } from '$lib/components/ui/separator';
 
+	import Equity from './Equity.svelte';
+
 	const { data } = $props();
+
+	const { user } = data;
+
+	let tickers = $derived(user.watchlistTickers);
+	let info = $derived(data.info);
+
+	// effect: refresh data
+	if (PUBLIC_DATA_REFRESHING === 'true') {
+		$effect(() => {
+			const refreshTickerInfo = setInterval(() => {
+				invalidate('data:tickerInfo');
+			}, 10000);
+
+			return () => clearInterval(refreshTickerInfo);
+		});
+	}
 
 	setNavContext({
 		title: 'Holdings',
 		route: '/holdings'
 	});
 
-	const currentHoldings = data.tickers
-		.map((t) => data.watchlist[t].totalMarketValueAtUnitPrice(data.info[t].regularMarketPrice))
+	let isEditingWatchlist = $state(false);
+	let inputNewTicker = $state('');
+
+	// svelte-ignore state_referenced_locally
+	const currentHoldings = tickers
+		.map((t) => user.watchlist[t].totalMarketValueAtUnitPrice(info[t]?.regularMarketPrice ?? 0))
 		.reduce((x, y) => x + y, 0);
-	const portfolioValueAtPreviousClose = data.tickers
+	// svelte-ignore state_referenced_locally
+	const portfolioValueAtPreviousClose = tickers
 		.map((t) => {
-			const info = data.info[t];
-			const holding = data.watchlist[t];
-			return holding.totalMarketValueAtUnitPrice(info.previousClose);
+			const tickerInfo = info[t];
+			const holding = user.watchlist[t];
+			return holding.totalMarketValueAtUnitPrice(tickerInfo?.previousClose ?? 0);
 		})
 		.reduce((x, y) => x + y, 0);
-	const portfolioValueNow = data.tickers
+	// svelte-ignore state_referenced_locally
+	const portfolioValueNow = tickers
 		.map((t) => {
-			const info = data.info[t];
-			const holding = data.watchlist[t];
-			return holding.totalMarketValueAtUnitPrice(info.regularMarketPrice);
+			const tickerInfo = info[t];
+			const holding = user.watchlist[t];
+			return holding.totalMarketValueAtUnitPrice(tickerInfo?.regularMarketPrice ?? 0);
 		})
 		.reduce((x, y) => x + y, 0);
-	const portfolioInitialInvestment = data.tickers
-		.map((t) => data.watchlist[t].totalInvestment)
-		.reduce((x, y) => x + y);
+	// svelte-ignore state_referenced_locally
+	const portfolioInitialInvestment = tickers
+		.map((t) => user.watchlist[t].totalInvestment)
+		.reduce((x, y) => x + y, 0);
 	const portfolio1DDelta = portfolioValueNow - portfolioValueAtPreviousClose;
 	const portfolioOverallDelta = portfolioValueNow - portfolioInitialInvestment;
 </script>
@@ -67,8 +102,78 @@
 
 <Separator />
 
-<div class="text-sm font-semibold [font-variant:small-caps]">Open Positions</div>
+<div class="flex flex-row items-center justify-between">
+	<span class="text-sm font-semibold">Watchlist</span>
+	<button onclick={() => (isEditingWatchlist = !isEditingWatchlist)} class="h-8 py-2 pl-2">
+		{#if isEditingWatchlist}
+			<span in:fade={{ delay: 250, duration: 250 }} out:fade={{ duration: 250 }}>
+				<Check class="size-4" />
+			</span>
+		{:else}
+			<span in:fade={{ delay: 250, duration: 250 }} out:fade={{ duration: 250 }}>
+				<Edit class="size-4" />
+			</span>
+		{/if}
+	</button>
+</div>
 
-{#each data.tickers as ticker (ticker)}
-	<Equity tickerData={data.info[ticker]} holding={data.watchlist[ticker]} />
+{#each tickers as ticker (ticker)}
+	<div transition:slide={{ duration: 500, axis: 'y' }} class="flex flex-row items-center">
+		<a
+			class={['grow', isEditingWatchlist ? 'pointer-events-none' : 'pointer-events-auto']}
+			href={`/holdings/${ticker}`}
+		>
+			<Equity tickerData={info[ticker]} holding={user.watchlist[ticker]} {isEditingWatchlist} />
+		</a>
+
+		{#if isEditingWatchlist}
+			<div class="h-full flex-shrink-0" transition:slide={{ duration: 500, axis: 'x' }}>
+				<Button class="ml-2 h-full" variant="destructive" onclick={() => user.removeTicker(ticker)}
+					><X /></Button
+				>
+			</div>
+		{/if}
+	</div>
 {/each}
+
+<Drawer.Root>
+	<Drawer.Trigger>
+		{#if isEditingWatchlist}
+			<div
+				transition:slide={{ duration: 500, axis: 'y' }}
+				class="flex w-full flex-row items-center justify-center"
+			>
+				<Button class="grow" variant="ghost">
+					<div class="flex flex-row items-center justify-center space-x-1 text-gray-600">
+						<Plus class="size-4" /> <span class="inline-block text-xs">Add New</span>
+					</div>
+				</Button>
+			</div>
+		{/if}
+	</Drawer.Trigger>
+
+	<Drawer.Content class="z-1001 mx-auto w-xs">
+		<Drawer.Header>
+			<Drawer.Title>Add New Ticker</Drawer.Title>
+			<Drawer.Description>Add a new ticker to your watchlist.</Drawer.Description>
+		</Drawer.Header>
+
+		<div class="p-4 pb-0">
+			<Input bind:value={inputNewTicker} placeholder="Ticker" />
+		</div>
+
+		<Drawer.Footer>
+			<Drawer.Close
+				onclick={() => {
+					const success = user.addTicker(inputNewTicker);
+
+					if (!success) {
+						toast.warning(`Ticker already in watchlist: ${inputNewTicker}.`);
+					}
+				}}
+				class={buttonVariants({ variant: 'default' })}>Confirm</Drawer.Close
+			>
+			<Drawer.Close class="text-sm font-semibold">Cancel</Drawer.Close>
+		</Drawer.Footer>
+	</Drawer.Content>
+</Drawer.Root>

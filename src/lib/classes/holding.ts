@@ -49,25 +49,25 @@ export class Position {
 	readonly direction: Direction;
 	readonly quantity: number;
 	readonly unitCost: number;
-	readonly createdAt?: Date;
+	readonly createdAt: Date;
 
-	constructor(direction: Direction, quantity: number, cost: number, createdAt?: Date) {
+	constructor(direction: Direction, quantity: number, unitCost: number, createdAt: Date) {
 		this.direction = direction;
 		this.quantity = quantity;
-		this.unitCost = cost;
+		this.unitCost = unitCost;
 		this.createdAt = createdAt;
 	}
 
 	isBuy(): boolean {
-		return this.direction == Direction.BUY;
+		return this.direction === Direction.BUY;
 	}
 
 	isSell(): boolean {
-		return this.direction == Direction.SELL;
+		return this.direction === Direction.SELL;
 	}
 
 	get effectiveQuantity(): number {
-		return this.direction == Direction.BUY ? this.quantity : -this.quantity;
+		return this.direction === Direction.BUY ? this.quantity : -this.quantity;
 	}
 
 	get effectiveCost(): number {

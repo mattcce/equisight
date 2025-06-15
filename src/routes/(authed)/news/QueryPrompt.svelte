@@ -23,7 +23,7 @@
 		articlesPerTicker = Math.max(1, Math.min(100, articlesPerTicker + adjustment));
 	}
 
-	let tickersToQuery: SvelteSet<string> = new SvelteSet(user.getAllWatchlistedTickers());
+	let tickersToQuery: SvelteSet<string> = new SvelteSet(user.watchlistTickers);
 
 	function addTicker(ticker: string): void {
 		ticker = ticker.trim();
@@ -81,7 +81,7 @@
 
 			<Button
 				onclick={() => {
-					user.getAllWatchlistedTickers().forEach((ticker) => {
+					user.watchlistTickers.forEach((ticker) => {
 						addTicker(ticker);
 					});
 				}}

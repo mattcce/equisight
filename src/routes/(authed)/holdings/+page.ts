@@ -1,16 +1,19 @@
 import { apiClient } from '$lib/api/client';
-import { type TickerInfo } from '$lib/api/types';
 import { Holding } from '$lib/classes/holding';
-import { getUser } from '$lib/mock/user';
+import { type TickerInfo } from '$lib/classes/types';
+import { initialiseCurrentUser, User, userStore } from '$lib/classes/user.svelte';
 
-const user = getUser();
-
-export async function load(): Promise<{
-	tickers: string[];
+export async function load({ depends }): Promise<{
+	user: User;
 	info: { [ticker: string]: TickerInfo };
 	watchlist: { [ticker: string]: Holding };
 }> {
-	const tickers: string[] = user.getAllWatchlistedTickers();
+	depends('data:tickerInfo');
+
+	await initialiseCurrentUser();
+	const user = userStore.user;
+
+	const tickers: string[] = user.watchlistTickers;
 
 	const tickersInfo = await Promise.all(
 		tickers.map((t) =>
@@ -23,8 +26,7 @@ export async function load(): Promise<{
 	);
 
 	return {
-		tickers,
-		info: Object.assign({}, ...tickersInfo),
-		watchlist: user.watchlist
+		user,
+		info: Object.assign({}, ...tickersInfo)
 	};
 }

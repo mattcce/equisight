@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { FinancialReport } from '$lib/api/types';
+	import type { FinancialReport } from '$lib/classes/types';
 	import * as Select from '$lib/components/ui/select';
 	import * as Table from '$lib/components/ui/table';
 	import { formatNumber } from '$lib/utils';
@@ -25,7 +25,7 @@
 	];
 
 	let key = $state(reports[0].title);
-	let currentReport = $derived(reports.find((r) => r.title == key));
+	let currentReport = $derived(reports.find((r) => r.title === key));
 </script>
 
 <Select.Root type="single" bind:value={key}>

@@ -1,11 +1,11 @@
 import { apiClient } from '$lib/api/client';
-import { type Article } from '$lib/api/types';
+import { type Article } from '$lib/classes/types';
 import { getUser } from '$lib/mock/user';
 
 const user = getUser();
 
 export async function load(): Promise<{ queryTimestamp: Date; articles: Article[] }> {
-	const tickers = user.getAllWatchlistedTickers();
+	const tickers = user.watchlistTickers;
 
 	const responses = await Promise.all(
 		tickers.map((t) =>

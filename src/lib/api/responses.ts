@@ -70,3 +70,16 @@ export type tickerAnnualReportsResposePayload = {
 		debtToEquity: number;
 	}[];
 };
+
+export type userWatchlistResponsePayload = {
+	watchlist: string[];
+};
+
+export type userWatchlistTickerPositionsResponsePayload = {
+	positions: {
+		direction: 'BUY' | 'SELL';
+		quantity: number;
+		unitCost: number;
+		createdAt: number;
+	}[];
+};
