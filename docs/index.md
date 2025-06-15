@@ -3,8 +3,8 @@
 layout: home
 
 hero:
-  name: "EquiSight Dev Docs"
-  text: "Developer documentation for `equisight`"
+  name: 'EquiSight Dev Docs'
+  text: 'Developer documentation for `equisight`'
   tagline: My great project tagline
   actions:
     - theme: brand
@@ -22,4 +22,3 @@ features:
   - title: Feature C
     details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
 ---
-
