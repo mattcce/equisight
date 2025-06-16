@@ -27,7 +27,7 @@
 		$effect(() => {
 			const refreshTickerInfo = setInterval(() => {
 				invalidate('data:tickerInfo');
-			}, 10000);
+			}, 5000);
 
 			return () => clearInterval(refreshTickerInfo);
 		});
@@ -164,11 +164,12 @@
 			<Drawer.Close
 				onclick={() => {
 					const success = user.addTicker(inputNewTicker);
-					inputNewTicker = '';
 
 					if (!success) {
 						toast.warning(`Ticker already in watchlist: ${inputNewTicker}.`);
 					}
+
+					inputNewTicker = '';
 				}}
 				class={buttonVariants({ variant: 'default' })}>Confirm</Drawer.Close
 			>
