@@ -23,7 +23,7 @@ export class User {
 	}
 
 	addHolding(ticker: string, holding: Holding): void {
-		if (Object.prototype.hasOwnProperty.call(this.#watchlist, ticker)) {
+		if (ticker in this.#watchlist) {
 			throw new Error('Cannot add multiple holdings to the same ticker.');
 		}
 
@@ -31,7 +31,7 @@ export class User {
 	}
 
 	addPosition(ticker: string, position: Position): void {
-		if (!Object.prototype.hasOwnProperty.call(this.watchlist, ticker)) {
+		if (!(ticker in this.#watchlist)) {
 			this.#watchlist[ticker] = new Holding(ticker);
 		}
 
@@ -39,7 +39,7 @@ export class User {
 	}
 
 	addTicker(ticker: string): boolean {
-		if (Object.prototype.hasOwnProperty.call(this.#watchlist, ticker)) {
+		if (ticker in this.#watchlist) {
 			return false;
 		}
 
@@ -48,7 +48,7 @@ export class User {
 	}
 
 	removeTicker(ticker: string): boolean {
-		if (!Object.prototype.hasOwnProperty.call(this.#watchlist, ticker)) {
+		if (!(ticker in this.#watchlist)) {
 			return false;
 		}
 
