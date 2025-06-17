@@ -1,10 +1,5 @@
-import { toast } from 'svelte-sonner';
-
-import { goto } from '$app/navigation';
-import { page } from '$app/state';
 import { PUBLIC_API_DOMAIN } from '$env/static/public';
-
-export const authStore = $state({ isAuthenticated: false });
+import { authStore } from '$lib/states/auth.svelte';
 
 export function handleUnauthorised(): void {
 	authStore.isAuthenticated = false;
@@ -35,21 +30,11 @@ export async function login(
 	if (response.ok) {
 		authStore.isAuthenticated = true;
 
-		toast.success('Logged in!');
-		goto(page.url.searchParams.get('redirectTo') ?? '/');
 		if (onSuccessfulCallback) {
 			onSuccessfulCallback();
 		}
 	} else {
 		const errorCode = response.status as LoginErrorCodes;
-		const message = await response.json();
-
-		switch (errorCode) {
-			case LoginErrorCodes.BAD_CREDENTIALS:
-				toast.error('Bad credentials!');
-				console.log(JSON.stringify(message));
-				break;
-		}
 
 		if (onErrorCallbacks && onErrorCallbacks[errorCode]) {
 			onErrorCallbacks[errorCode]();
@@ -82,22 +67,14 @@ export async function register(
 	});
 
 	if (response.ok) {
-		toast.success('Registered!');
 		if (onSuccessfulCallback) {
 			onSuccessfulCallback();
 		}
 	} else {
 		const errorCode = response.status as RegisterErrorCodes;
-		const message = await response.json();
-
-		switch (errorCode) {
-			default:
-				toast.error(`Failed to register.`);
-				console.log(JSON.stringify(message));
-				break;
-		}
 
 		if (onErrorCallbacks && onErrorCallbacks[errorCode]) {
+			console.log('here');
 			onErrorCallbacks[errorCode]();
 		}
 	}
@@ -117,7 +94,6 @@ export async function logout(
 	});
 
 	if (response.ok) {
-		toast.info('Logged out.');
 		authStore.isAuthenticated = false;
 		if (onSuccessfulCallback) {
 			onSuccessfulCallback();

@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { LogOut } from '@lucide/svelte';
 
+	import { toast } from 'svelte-sonner';
+
 	import { logout } from '$lib/api/auth.svelte';
 	import { navContext } from '$lib/classes/nav.svelte';
 	import Button from '$lib/components/ui/button/button.svelte';
@@ -46,7 +48,14 @@
 				<div></div>
 			{/if}
 
-			<Button class="ml-auto w-12" variant="ghost" onclick={() => logout()}><LogOut /></Button>
+			<Button
+				class="ml-auto w-12"
+				variant="ghost"
+				onclick={() =>
+					logout(() => {
+						toast.info('Logged out.');
+					})}><LogOut /></Button
+			>
 		</div>
 	</div>
 </div>

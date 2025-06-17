@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
-	import { authStore } from '$lib/api/auth.svelte';
 	import NavButton from '$lib/components/NavButton.svelte';
+	import { authStore } from '$lib/states/auth.svelte';
 
 	import TopNav from './TopNav.svelte';
 

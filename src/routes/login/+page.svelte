@@ -1,10 +1,13 @@
 <script lang="ts">
 	import { Control } from 'formsnap';
+	import { toast } from 'svelte-sonner';
 	import { get } from 'svelte/store';
 	import { superForm } from 'sveltekit-superforms';
 	import { zodClient } from 'sveltekit-superforms/adapters';
 
-	import { login, register, LoginErrorCodes } from '$lib/api/auth.svelte';
+	import { goto } from '$app/navigation';
+	import { page } from '$app/state';
+	import { login, register, LoginErrorCodes, RegisterErrorCodes } from '$lib/api/auth.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import * as Form from '$lib/components/ui/form';
 	import { Input } from '$lib/components/ui/input';
@@ -21,6 +24,14 @@
 	const loginFailedCallbacks = {
 		[LoginErrorCodes.BAD_CREDENTIALS]: () => {
 			formData.set({ username: get(formData).username, password: '' });
+			toast.error('Bad credentials!');
+		}
+	};
+
+	const registerFailedCallbacks = {
+		[RegisterErrorCodes.BAD_REQUEST]: () => {
+			formData.set({ username: get(formData).username, password: '' });
+			toast.error(`Failed to register.`);
 		}
 	};
 </script>
@@ -61,7 +72,15 @@
 			class="mt-6"
 			onclick={() => {
 				const { username, password } = get(formData);
-				login(username, password, undefined, loginFailedCallbacks);
+				login(
+					username,
+					password,
+					() => {
+						goto(page.url.searchParams.get('redirectTo') ?? '/');
+						toast.success('Logged in!');
+					},
+					loginFailedCallbacks
+				);
 			}}>Log In</Button
 		>
 
@@ -69,7 +88,15 @@
 			variant="outline"
 			onclick={() => {
 				const { username, password } = get(formData);
-				register(username, password);
+				register(
+					username,
+					password,
+					() => {
+						formData.set({ username: get(formData).username, password: '' });
+						toast.success('Registered!');
+					},
+					registerFailedCallbacks
+				);
 			}}>Register</Button
 		>
 	</div>
