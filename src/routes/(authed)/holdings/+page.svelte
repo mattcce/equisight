@@ -7,13 +7,13 @@
 	import { invalidate } from '$app/navigation';
 	import { PUBLIC_DATA_REFRESHING } from '$env/static/public';
 	import { setNavContext } from '$lib/classes/nav.svelte.js';
-	import { user } from '$lib/classes/user.svelte';
 	import ColouredIndicator from '$lib/components/ColouredIndicator.svelte';
 	import Button, { buttonVariants } from '$lib/components/ui/button/button.svelte';
 	import * as Card from '$lib/components/ui/card';
 	import * as Drawer from '$lib/components/ui/drawer';
 	import Input from '$lib/components/ui/input/input.svelte';
 	import { Separator } from '$lib/components/ui/separator';
+	import { user } from '$lib/states/user.svelte';
 
 	import Equity from './Equity.svelte';
 
@@ -43,13 +43,13 @@
 
 	// svelte-ignore state_referenced_locally
 	const currentHoldings = tickers
-		.map((t) => user.watchlist[t].totalMarketValueAtUnitPrice(info[t]?.regularMarketPrice ?? 0))
+		.map((t) => user.getHolding(t).totalMarketValueAtUnitPrice(info[t]?.regularMarketPrice ?? 0))
 		.reduce((x, y) => x + y, 0);
 	// svelte-ignore state_referenced_locally
 	const portfolioValueAtPreviousClose = tickers
 		.map((t) => {
 			const tickerInfo = info[t];
-			const holding = user.watchlist[t];
+			const holding = user.getHolding(t);
 			return holding.totalMarketValueAtUnitPrice(tickerInfo?.previousClose ?? 0);
 		})
 		.reduce((x, y) => x + y, 0);
@@ -57,13 +57,13 @@
 	const portfolioValueNow = tickers
 		.map((t) => {
 			const tickerInfo = info[t];
-			const holding = user.watchlist[t];
+			const holding = user.getHolding(t);
 			return holding.totalMarketValueAtUnitPrice(tickerInfo?.regularMarketPrice ?? 0);
 		})
 		.reduce((x, y) => x + y, 0);
 	// svelte-ignore state_referenced_locally
 	const portfolioInitialInvestment = tickers
-		.map((t) => user.watchlist[t].totalInvestment)
+		.map((t) => user.getHolding(t).totalInvestment)
 		.reduce((x, y) => x + y, 0);
 	const portfolio1DDelta = portfolioValueNow - portfolioValueAtPreviousClose;
 	const portfolioOverallDelta = portfolioValueNow - portfolioInitialInvestment;

@@ -1,6 +1,6 @@
 import { apiClient } from '$lib/api/client';
 import { type TickerInfo } from '$lib/classes/types';
-import { user } from '$lib/classes/user.svelte';
+import { user } from '$lib/states/user.svelte';
 
 export async function load({ depends }): Promise<{
 	info: { [ticker: string]: TickerInfo };

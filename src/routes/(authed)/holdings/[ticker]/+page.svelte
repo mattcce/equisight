@@ -9,7 +9,6 @@
 	import { marketIsOpen } from '$lib/api/utils';
 	import { Direction, Position } from '$lib/classes/holding.svelte';
 	import { setNavContext } from '$lib/classes/nav.svelte';
-	import { user } from '$lib/classes/user.svelte';
 	import BreathingIndicator from '$lib/components/BreathingIndicator.svelte';
 	import { Button, buttonVariants } from '$lib/components/ui/button';
 	import * as Drawer from '$lib/components/ui/drawer';
@@ -17,6 +16,7 @@
 	import { Label } from '$lib/components/ui/label';
 	import Separator from '$lib/components/ui/separator/separator.svelte';
 	import * as Tabs from '$lib/components/ui/tabs';
+	import { user } from '$lib/states/user.svelte';
 	import { formatDateTime, toISOStringWithTZ } from '$lib/utils';
 
 	import HoldingsViewer from './HoldingsViewer.svelte';
@@ -243,7 +243,7 @@
 
 					const newPosition = new Position(direction, quantity, unitCost, createdAt);
 
-					user.watchlist[ticker].addOpenPosition(newPosition);
+					user.addPosition(ticker, newPosition);
 
 					resetInputNewPosition();
 				}}

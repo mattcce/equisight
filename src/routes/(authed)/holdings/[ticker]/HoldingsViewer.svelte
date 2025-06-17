@@ -4,13 +4,13 @@
 	import { slide } from 'svelte/transition';
 
 	import { directionToString, Direction } from '$lib/classes/holding.svelte';
-	import { user } from '$lib/classes/user.svelte';
 	import * as Table from '$lib/components/ui/table';
+	import { user } from '$lib/states/user.svelte';
 	import { formatDateTime } from '$lib/utils';
 
 	const { ticker, isEditingHoldings }: { ticker: string; isEditingHoldings: boolean } = $props();
 
-	let positions = $derived(user.watchlist[ticker].openPositions);
+	let positions = $derived(user.getHolding(ticker).openPositions);
 </script>
 
 <Table.Root class="text-xs">
