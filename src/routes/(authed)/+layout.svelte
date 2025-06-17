@@ -2,7 +2,6 @@
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 	import { authStore } from '$lib/api/auth.svelte';
-	import { initNavContext } from '$lib/classes/nav.svelte';
 	import NavButton from '$lib/components/NavButton.svelte';
 
 	import TopNav from './TopNav.svelte';
@@ -16,8 +15,6 @@
 	];
 
 	const navCurrentLocation = $derived(page.url.pathname.split('/')[1]);
-
-	initNavContext();
 
 	let isAuthenticated = $derived(authStore.isAuthenticated);
 

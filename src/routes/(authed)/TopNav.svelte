@@ -2,10 +2,8 @@
 	import { LogOut } from '@lucide/svelte';
 
 	import { logout } from '$lib/api/auth.svelte';
-	import { type NavContext, getNavContext } from '$lib/classes/nav.svelte';
+	import { navContext } from '$lib/classes/nav.svelte';
 	import Button from '$lib/components/ui/button/button.svelte';
-
-	const navContext: NavContext = getNavContext();
 </script>
 
 <div class="fixed top-0 left-0 z-1000 w-full bg-gray-100 p-3">

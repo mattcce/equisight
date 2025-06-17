@@ -63,7 +63,7 @@ export class User {
 
 export const user: User = $state(await initialiseUser());
 
-export async function initialiseUser(): Promise<User> {
+async function initialiseUser(): Promise<User> {
 	const user = new User('mock');
 
 	const watchlist = await apiClient(`/users/me/watchlist`, { method: 'GET' })

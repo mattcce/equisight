@@ -1,5 +1,3 @@
-import { getContext, setContext } from 'svelte';
-
 export type NavContext = {
 	previous?: {
 		title: string;
@@ -12,23 +10,20 @@ export type NavContext = {
 	};
 };
 
-export function getNavContext(): NavContext {
-	return getContext('nav-context');
-}
+export const navContext: NavContext = $state(initNavContext());
 
-export function initNavContext(): void {
-	const init: NavContext = $state({
+function initNavContext(): NavContext {
+	const init: NavContext = {
 		previous: undefined,
 		current: undefined
-	});
-	setContext('nav-context', init);
+	};
+	return init;
 }
 
 export function setNavContext(
 	current: { title: string; supplement?: string; route: string },
 	previous?: { title: string; route: string }
 ): void {
-	const navContext = getNavContext();
 	navContext.current = current;
 	navContext.previous = previous;
 }
