@@ -1,0 +1,89 @@
+direction: right
+
+start: Start {
+  shape: rectangle
+  style: {
+    border-radius: 20
+    fill: grey
+  }
+}
+
+d1: |md
+  User is authenticated <br />
+  (session cookie present)
+| {
+  shape: diamond
+}
+
+n2: |md
+  Redirect to login page
+| {
+  shape: rectangle
+}
+
+n3: |md
+  Login
+| {
+  shape: rectangle
+}
+
+n8: |md
+  Register
+| {
+  shape: rectangle
+}
+
+d4: |md
+  Authentication
+| {
+  shape: diamond
+}
+
+n5: |md
+  Redirect to previous or default page
+| {
+  shape: rectangle
+}
+
+n6: |md
+  Session authenticated
+| {
+  shape: rectangle
+}
+
+n7: |md
+  Session expired
+| {
+  shape: rectangle
+}
+
+n9: |md
+  Logout
+| {
+  shape: rectangle
+}
+
+end: End {
+  shape: rectangle
+  style: {
+    border-radius: 20
+    fill: grey
+  }
+}
+
+start -> d1
+d1 -> n2: No
+d1 -> n6: Yes
+n6 -> n5
+n2 -> n3
+n3 -> d4
+n2 -> n8
+n8 -> n2
+d4 -> n6: Good credentials
+d4 -> n2: Bad credentials
+n6 -> n7: timeout
+n6 -> n9
+n9 -> n7
+n7 -> n2
+n6 -> end
+n7 -> end

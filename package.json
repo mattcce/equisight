@@ -25,7 +25,8 @@
 		"docs:dev": "vitepress dev docs --port 5174",
 		"docs:build": "vitepress build docs",
 		"docs:preview": "vitepress preview docs",
-		"mdlint": "markdownlint '**/*.md' --fix --ignore node_modules"
+		"mdlint": "markdownlint '**/*.md' --fix --ignore node_modules",
+		"d2:compile": "find ./docs/assets/*.d2 | xargs -I {} d2 {} --theme 6 --layout=elk"
 	},
 	"devDependencies": {
 		"@eslint/compat": "^1.2.5",

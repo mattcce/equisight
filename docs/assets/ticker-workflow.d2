@@ -1,0 +1,90 @@
+direction: right
+
+start: Start {
+  shape: rectangle
+  style: {
+    border-radius: 20
+    fill: grey
+  }
+}
+
+price-history: Price History {
+  n1: |md
+    View ticker price history
+  | {
+    shape: rectangle
+  }
+
+  n2: |md
+    Change time range
+  | {
+    shape: rectangle
+  }
+
+  n1 -> n2
+  n2 -> n1
+}
+
+holdings: Holdings {
+  n3: |md
+    View registered holdings
+  | {
+    shape: rectangle
+  }
+
+  n4: |md
+    Add holding
+  | {
+    shape: rectangle
+  }
+
+  n5: |md
+    Remove holding
+  | {
+    shape: rectangle
+  }
+
+  n3 -> n4
+  n3 -> n5
+  n4 -> n3
+  n5 -> n3
+}
+
+financial-reports: Financial Reports {
+  d6: |md
+    Financial reports availability
+  | {
+    shape: rectangle
+  }
+
+  n7: |md
+    View annual reports
+  | {
+    shape: rectangle
+  }
+
+  n8: |md
+    View quarterly reports
+  | {
+    shape: rectangle
+  }
+
+  d6 -> n7: Yes
+  n7 -> n8
+  n8 -> n7
+}
+
+end: End {
+  shape: rectangle
+  style: {
+    border-radius: 20
+    fill: grey
+  }
+}
+
+start -> price-history.n1
+price-history.n1 -> end
+start -> holdings.n3
+holdings.n3 -> end
+start -> financial-reports.d6
+financial-reports.d6 -> end: No

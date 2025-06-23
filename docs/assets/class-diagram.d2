@@ -1,0 +1,62 @@
+User: {
+  shape: class
+
+  -\#identifier: string
+  -watchlist: "{ [ticker: string]: Holding }"
+  +identifier: string
+  +watchlistTickers: string
+
+  +constructor(identifier string)
+  +addTicker(ticker string): boolean
+  +removeTicker(ticker string): boolean
+  +addPosition(ticker string): boolean
+  +removePosition(ticker string): boolean
+  +getHolding(ticker string): Holding
+}
+
+Holding: {
+  shape: class
+
+  +ticker: string
+  -\#positions: "Position[]"
+  +totalInvestment: number
+  +totalQuantity: number
+  +averageCost: number
+  +openPositions: number
+
+  +constructor(ticker string, openPositions? Position\[\])
+  +totalMarketValueAtUnitPrice(unitPrice number): number
+  +addOpenPosition(position Position)
+  +removeOpenPosition(position Position): boolean
+}
+
+Position: {
+  shape: class
+
+  +direction: direction
+  +quantity: number
+  +unitCost: number
+  +createdAt: Date
+  +effectiveQuantity: number
+  +effectiveCost: number
+
+  +constructor(direction Direction, quantity number, unitCost number, createdAt? Date)
+  +isBuy(): boolean
+  +isSell(): boolean
+}
+
+User <-> Holding: +owns {
+  source-arrowhead: {
+    shape: diamond
+    style.filled: true
+  }
+  target-arrowhead: 0..*
+}
+
+Holding <-> Position: +owns {
+  source-arrowhead: {
+    shape: diamond
+    style.filled: true
+  }
+  target-arrowhead: 0..*
+}

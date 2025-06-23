@@ -4,15 +4,15 @@ layout: home
 
 hero:
   name: 'EquiSight'
-  text: 'Developer documentation for EquiSight'
+  text: 'Personal assistant for retail investors'
   tagline: ''
   actions:
     - theme: brand
-      text: Markdown Examples
-      link: /markdown-examples
+      text: Getting Started
+      link: /getting-started.md
     - theme: alt
-      text: API Examples
-      link: /api-examples
+      text: Project Introduction
+      link: /project-introduction
 
 features:
   - title: Feature A

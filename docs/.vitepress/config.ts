@@ -8,14 +8,23 @@ export default defineConfig({
 		// https://vitepress.dev/reference/default-theme-config
 		nav: [
 			{ text: 'Home', link: '/' },
-			{ text: 'Architecture', link: '/architecture/' },
+			{ text: 'Architecture', link: '/architecture' },
+			{ text: 'Frontend', link: '/frontend/' },
 			{ text: 'Backend', link: '/backend/' }
 		],
 
 		sidebar: [
 			{
-				text: 'Architecture',
-				items: [{ text: 'Overview', link: '/architecture/' }]
+				text: 'Project',
+				items: [
+					{ text: 'Introduction', link: '/project-introduction' },
+					{ text: 'Architecture', link: '/architecture' },
+					{ text: 'Features', link: '/features' }
+				]
+			},
+			{
+				text: 'Frontend',
+				items: [{ text: 'Overview', link: '/frontend/' }]
 			},
 			{
 				text: 'Backend',
