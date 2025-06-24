@@ -1,2 +1,3 @@
+pnpm exec markdownlint '**/*.md' --fix --ignore node_modules
 pnpm exec lint-staged
 pnpm test

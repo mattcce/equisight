@@ -1,0 +1,58 @@
+direction: right
+
+start: Start {
+  shape: rectangle
+  style: {
+    border-radius: 20
+    fill: grey
+  }
+}
+
+n1: |md
+  View portfolio data
+| {
+  shape: rectangle
+}
+
+n2: |md
+  Edit watchlist
+| {
+  shape: rectangle
+}
+
+n3: |md
+  Remove ticker
+| {
+  shape: rectangle
+}
+
+n4: |md
+  Add ticker
+| {
+  shape: rectangle
+}
+
+n5: |md
+  User state update
+| {
+  shape: rectangle
+}
+
+end: End {
+  shape: rectangle
+  style: {
+    border-radius: 20
+    fill: grey
+  }
+}
+
+start -> n1
+start -> n2
+n1 -> n2
+n2 -> n3
+n2 -> n4
+n3 -> n5
+n4 -> n5
+n5 -> n1
+n1 -> end
+n1 -> n1: Data refresh

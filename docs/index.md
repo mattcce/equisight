@@ -3,16 +3,16 @@
 layout: home
 
 hero:
-  name: "EquiSight Dev Docs"
-  text: "Developer documentation for `equisight`"
-  tagline: My great project tagline
+  name: 'EquiSight'
+  text: 'Personal assistant for retail investors'
+  tagline: ''
   actions:
     - theme: brand
-      text: Markdown Examples
-      link: /markdown-examples
+      text: Getting Started
+      link: /getting-started.md
     - theme: alt
-      text: API Examples
-      link: /api-examples
+      text: Project Introduction
+      link: /project-introduction
 
 features:
   - title: Feature A
@@ -22,4 +22,3 @@ features:
   - title: Feature C
     details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
 ---
-

@@ -1,0 +1,29 @@
+shape: sequence_diagram
+
+client: Client
+webserver: Webserver
+backend: Backend
+
+webserver -> client: |md
+  Serve application
+|
+
+authentication: Authentication {
+  client.d1 -> backend.d1: |md
+    Credentials (password-based authentication)
+  |
+
+  backend.d1 -> client.d1: |md
+    Session cookie
+  |
+}
+
+session: Authenticated Session {
+  client.d2 -> backend.d2: |md
+    Authenticated Request
+  |
+
+  backend.d2 -> client.d2: |md
+    Response
+  |
+}

@@ -23,6 +23,9 @@ export default ts.config(
 		rules: { 'no-undef': 'off' }
 	},
 	{
+		ignores: ['node_modules', '.svelte-kit']
+	},
+	{
 		files: ['**/*.svelte', '**/*.svelte.ts', '**/*.svelte.js'],
 		languageOptions: {
 			parserOptions: {

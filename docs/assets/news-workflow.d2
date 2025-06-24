@@ -1,0 +1,73 @@
+direction: right
+
+start: Start {
+  shape: rectangle
+  style: {
+    border-radius: 20
+    fill: grey
+  }
+}
+
+n1: |md
+  Retrieve news
+| {
+  shape: rectangle
+}
+
+d2: |md
+  Previous query <br />
+  already present
+| {
+  shape: diamond
+}
+
+n3: |md
+  Read/access articles
+| {
+  shape: rectangle
+}
+
+g1: Configure query {
+  n4: |md
+    Select tickers
+  | {
+    shape: rectangle
+  }
+
+  n5: |md
+    Select number of articles <br />
+    to query per ticker
+  | {
+    shape: rectangle
+  }
+
+  n4 -> n5
+}
+
+n6: |md
+  Launch query
+| {
+  shape: rectangle
+}
+
+d7: |md
+  Query sufficient
+| {shape: diamond}
+
+end: End {
+  shape: rectangle
+  style: {
+    border-radius: 20
+    fill: grey
+  }
+}
+
+start -> n1
+n1 -> d2
+d2 -> n3: No
+d2 -> g1.n4: Yes
+n3 -> d7
+g1.n5 -> n6
+n6 -> n3
+d7 -> end: Yes
+d7 -> g1.n4: No
