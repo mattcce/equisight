@@ -1,0 +1,26 @@
+# Direction: right
+# Theme: neutral-gray
+
+Client: Client
+Backend: Backend Service
+Database: Database (Cache)
+ExternalAPI: External API (yfinance)
+
+Client -> Backend: GET /ticker/\{ticker\}/history
+Backend -> Database: Query for historical data
+
+alt: {
+  "Cache Hit": {
+    Database -> Backend: Return cached data
+  }
+
+  "Cache Miss": {
+    Database -> Backend: Data not found
+    Backend -> ExternalAPI: Request historical data
+    ExternalAPI -> Backend: Return data
+    Backend -> Database: Store new data
+    Database -> Backend: Confirm data stored
+  }
+}
+
+Backend -> Client: 200 OK (with data)
