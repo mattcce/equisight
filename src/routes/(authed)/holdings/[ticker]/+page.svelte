@@ -16,7 +16,7 @@
 	import { Label } from '$lib/components/ui/label';
 	import Separator from '$lib/components/ui/separator/separator.svelte';
 	import * as Tabs from '$lib/components/ui/tabs';
-	import { user } from '$lib/states/user.svelte';
+	import { commitAddPosition, user } from '$lib/states/user.svelte';
 	import { formatDateTime, toISOStringWithTZ } from '$lib/utils';
 
 	import HoldingsViewer from './HoldingsViewer.svelte';
@@ -225,11 +225,10 @@
 		<div class="p-4 pb-0"></div>
 		<Drawer.Footer>
 			<Drawer.Close
-				onclick={() => {
-					const direction = inputNewPosition.direction === 'BUY' ? Direction.BUY : Direction.SELL;
+				onclick={async () => {
+					const direction = inputNewPosition.direction;
 					const quantity = Number(inputNewPosition.quantity);
 					const unitCost = Number(inputNewPosition.unitCost);
-					const createdAt = new Date(Date.parse(inputNewPosition.createdAt));
 
 					if (quantity === 0) {
 						toast.error('Quantity cannot be 0.');
@@ -241,7 +240,24 @@
 						return;
 					}
 
-					const newPosition = new Position(direction, quantity, unitCost, createdAt);
+					const positionResponse = await commitAddPosition(ticker, direction, quantity, unitCost);
+
+					if (!positionResponse) {
+						toast.error('Failed to add position');
+						resetInputNewPosition();
+						return;
+					}
+
+					const id = positionResponse.id;
+					const createdAt = new Date(positionResponse.createdAt * 1000);
+
+					const newPosition = new Position(
+						id,
+						direction === 'BUY' ? Direction.BUY : Direction.SELL,
+						quantity,
+						unitCost,
+						createdAt
+					);
 
 					user.addPosition(ticker, newPosition);
 

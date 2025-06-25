@@ -1,24 +1,31 @@
-import { apiClient } from '$lib/api/mock-client';
-import { Holding, Direction, Position } from '$lib/classes/holding.svelte';
+import { apiClient } from '$lib/api/client';
+import type { userWatchlistTickerPostPositionsResponsePayload } from '$lib/api/responses';
+import { Direction, Position } from '$lib/classes/holding.svelte';
 import { User } from '$lib/classes/user.svelte';
 
 export const user: User = $state(await initialiseUser());
 
 async function initialiseUser(): Promise<User> {
-	const user = new User('mock');
+	const identifier = await apiClient(`/users/me`, { method: 'GET' })
+		.then((r) => r.json())
+		.then((r) => r.email);
+
+	const user = new User(identifier);
 
 	const watchlist = await apiClient(`/users/me/watchlist`, { method: 'GET' })
 		.then((r) => r.json())
-		.then((r) => r.watchlist);
+		.then((r) => r.tickers);
+
+	console.log(watchlist);
+
+	watchlist.forEach((t) => user.addTicker(t));
 
 	await Promise.all(
 		watchlist.map((t) =>
-			apiClient(`/users/me/watchlist/${t}`, { method: 'GET' })
+			apiClient(`/users/me/watchlist/${t}/positions`, { method: 'GET' })
 				.then((r) => r.json())
 				.then((r) => r.positions)
 				.then((ps) => {
-					const holding = new Holding(t);
-
 					ps.forEach((p) => {
 						const direction =
 							p.direction === 'BUY'
@@ -28,16 +35,53 @@ async function initialiseUser(): Promise<User> {
 									: (() => {
 											throw new Error('Invalid direction');
 										})();
-						const { quantity, unitCost } = p;
-						const createdAt = new Date(p.createdAt);
+						const { id, quantity, unitCost } = p;
+						const createdAt = new Date(p.createdAt * 1000);
 
-						user.addPosition(t, new Position(direction, quantity, unitCost, createdAt));
+						user.addPosition(t, new Position(id, direction, quantity, unitCost, createdAt));
 					});
-
-					return holding;
 				})
 		)
 	);
 
 	return user;
+}
+
+export async function commitAddTicker(ticker: string): Promise<boolean> {
+	return apiClient(`/users/me/watchlist/${ticker}`, { method: 'POST' }).then((r) => r.ok);
+}
+
+export async function commitRemoveTicker(ticker: string): Promise<boolean> {
+	return apiClient(`/users/me/watchlist/${ticker}`, { method: 'DELETE' }).then((r) => r.ok);
+}
+
+export async function commitAddPosition(
+	ticker: string,
+	direction: string,
+	quantity: number,
+	unitCost: number
+): Promise<userWatchlistTickerPostPositionsResponsePayload | undefined> {
+	return apiClient(`/users/me/watchlist/${ticker}/positions`, {
+		method: 'POST',
+		body: JSON.stringify({
+			direction,
+			quantity,
+			unitCost
+		}),
+		headers: {
+			'Content-Type': 'application/json'
+		}
+	}).then((r) => {
+		if (r.ok) {
+			return r.json();
+		} else {
+			return undefined;
+		}
+	});
+}
+
+export async function commitRemovePosition(ticker: string, positionId: number): Promise<boolean> {
+	return apiClient(`/users/me/watchlist/${ticker}/positions/${positionId}`, {
+		method: 'DELETE'
+	}).then((r) => r.ok);
 }

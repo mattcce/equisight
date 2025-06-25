@@ -29,27 +29,27 @@ describe('User', () => {
 
 	it('should return holdings for a ticker in watchlist with added positions', () => {
 		const user = new User('test');
-		user.addPosition('TEST', new Position(Direction.BUY, 1, 1, new Date(0)));
+		user.addPosition('TEST', new Position(0, Direction.BUY, 1, 1, new Date(0)));
 		expect(user.getHolding('TEST').openPositions).toContainEqual(
-			new Position(Direction.BUY, 1, 1, new Date(0))
+			new Position(0, Direction.BUY, 1, 1, new Date(0))
 		);
 	});
 
 	it('should accept new position for ticker already in watchlist', () => {
 		const user = new User('test');
 		user.addTicker('TEST');
-		user.addPosition('TEST', new Position(Direction.BUY, 1, 1, new Date(0)));
+		user.addPosition('TEST', new Position(0, Direction.BUY, 1, 1, new Date(0)));
 		expect(user.getHolding('TEST').openPositions).toContainEqual(
-			new Position(Direction.BUY, 1, 1, new Date(0))
+			new Position(0, Direction.BUY, 1, 1, new Date(0))
 		);
 	});
 
 	it('should accept new position for ticker not already in watchlist', () => {
 		const user = new User('test');
-		user.addPosition('TEST', new Position(Direction.BUY, 1, 1, new Date(0)));
+		user.addPosition('TEST', new Position(0, Direction.BUY, 1, 1, new Date(0)));
 		expect(user.watchlistTickers).toContain('TEST');
 		expect(user.getHolding('TEST').openPositions).toContainEqual(
-			new Position(Direction.BUY, 1, 1, new Date(0))
+			new Position(0, Direction.BUY, 1, 1, new Date(0))
 		);
 	});
 

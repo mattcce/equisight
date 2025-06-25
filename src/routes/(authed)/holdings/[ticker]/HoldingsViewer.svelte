@@ -5,7 +5,7 @@
 
 	import { directionToString, Direction } from '$lib/classes/holding.svelte';
 	import * as Table from '$lib/components/ui/table';
-	import { user } from '$lib/states/user.svelte';
+	import { commitRemovePosition, user } from '$lib/states/user.svelte';
 	import { formatDateTime } from '$lib/utils';
 
 	const { ticker, isEditingHoldings }: { ticker: string; isEditingHoldings: boolean } = $props();
@@ -47,6 +47,9 @@
 								<button
 									onclick={() => {
 										user.removePosition(ticker, pos);
+
+										const success = commitRemovePosition(ticker, pos.id);
+										console.log(success);
 									}}
 								>
 									<X class="size-4" />

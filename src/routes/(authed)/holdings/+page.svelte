@@ -13,7 +13,7 @@
 	import * as Drawer from '$lib/components/ui/drawer';
 	import Input from '$lib/components/ui/input/input.svelte';
 	import { Separator } from '$lib/components/ui/separator';
-	import { user } from '$lib/states/user.svelte';
+	import { commitAddTicker, commitRemoveTicker, user } from '$lib/states/user.svelte';
 
 	import Equity from './Equity.svelte';
 
@@ -126,8 +126,14 @@
 
 		{#if isEditingWatchlist}
 			<div class="h-full flex-shrink-0" transition:slide={{ duration: 500, axis: 'x' }}>
-				<Button class="ml-2 h-full" variant="destructive" onclick={() => user.removeTicker(ticker)}
-					><X /></Button
+				<Button
+					class="ml-2 h-full"
+					variant="destructive"
+					onclick={() => {
+						user.removeTicker(ticker);
+
+						commitRemoveTicker(ticker);
+					}}><X /></Button
 				>
 			</div>
 		{/if}
@@ -167,7 +173,11 @@
 
 					if (!success) {
 						toast.warning(`Ticker already in watchlist: ${inputNewTicker}.`);
+						inputNewTicker = '';
+						return;
 					}
+
+					commitAddTicker(inputNewTicker);
 
 					inputNewTicker = '';
 				}}

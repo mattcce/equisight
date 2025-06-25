@@ -77,9 +77,18 @@ export type userWatchlistResponsePayload = {
 
 export type userWatchlistTickerPositionsResponsePayload = {
 	positions: {
+		id: number;
 		direction: 'BUY' | 'SELL';
 		quantity: number;
 		unitCost: number;
 		createdAt: number;
 	}[];
+};
+
+export type userWatchlistTickerPostPositionsResponsePayload = {
+	id: number;
+	direction: 'BUY' | 'SELL';
+	quantity: number;
+	unitCost: number;
+	createdAt: number;
 };

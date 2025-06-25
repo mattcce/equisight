@@ -5,9 +5,9 @@ import { Holding, Position, Direction } from './holding.svelte';
 describe('Holding', () => {
 	it('should return correct total quantity', () => {
 		const holding = new Holding('EXAMPLE', [
-			new Position(Direction.BUY, 2, 4),
-			new Position(Direction.SELL, 1, 6),
-			new Position(Direction.BUY, 3, 2)
+			new Position(0, Direction.BUY, 2, 4),
+			new Position(1, Direction.SELL, 1, 6),
+			new Position(2, Direction.BUY, 3, 2)
 		]);
 
 		expect(holding.totalQuantity).toBe(4);
@@ -15,9 +15,9 @@ describe('Holding', () => {
 
 	it('should return correct initial investment value', () => {
 		const holding = new Holding('EXAMPLE', [
-			new Position(Direction.BUY, 2, 4),
-			new Position(Direction.SELL, 1, 6),
-			new Position(Direction.BUY, 3, 2)
+			new Position(0, Direction.BUY, 2, 4),
+			new Position(1, Direction.SELL, 1, 6),
+			new Position(2, Direction.BUY, 3, 2)
 		]);
 
 		expect(holding.totalInvestment).toBe(8);
@@ -25,9 +25,9 @@ describe('Holding', () => {
 
 	it('should return correct average cost', () => {
 		const holding = new Holding('EXAMPLE', [
-			new Position(Direction.BUY, 2, 4),
-			new Position(Direction.SELL, 1, 6),
-			new Position(Direction.BUY, 3, 2)
+			new Position(0, Direction.BUY, 2, 4),
+			new Position(1, Direction.SELL, 1, 6),
+			new Position(2, Direction.BUY, 3, 2)
 		]);
 
 		expect(holding.averageCost).toBe(2);
@@ -35,23 +35,23 @@ describe('Holding', () => {
 
 	it('should accept new open position', () => {
 		const holding = new Holding('EXAMPLE', [
-			new Position(Direction.BUY, 2, 4),
-			new Position(Direction.SELL, 1, 6),
-			new Position(Direction.BUY, 3, 2)
+			new Position(0, Direction.BUY, 2, 4),
+			new Position(1, Direction.SELL, 1, 6),
+			new Position(2, Direction.BUY, 3, 2)
 		]);
 
 		expect(holding.totalInvestment).toBe(8);
 
-		holding.addOpenPosition(new Position(Direction.BUY, 4, 4));
+		holding.addOpenPosition(new Position(0, Direction.BUY, 4, 4));
 
 		expect(holding.totalInvestment).toBe(24);
 	});
 
 	it('should return correct total market value', () => {
 		const holding = new Holding('EXAMPLE', [
-			new Position(Direction.BUY, 2, 4),
-			new Position(Direction.SELL, 1, 6),
-			new Position(Direction.BUY, 3, 2)
+			new Position(0, Direction.BUY, 2, 4),
+			new Position(1, Direction.SELL, 1, 6),
+			new Position(2, Direction.BUY, 3, 2)
 		]);
 
 		expect(holding.totalMarketValueAtUnitPrice(10)).toBe(40);
@@ -59,10 +59,10 @@ describe('Holding', () => {
 
 	it('should allow removal of open position', () => {
 		const holding = new Holding('EXAMPLE', [
-			new Position(Direction.BUY, 2, 4),
-			new Position(Direction.SELL, 1, 6),
-			new Position(Direction.BUY, 3, 2),
-			new Position(Direction.BUY, 4, 4)
+			new Position(0, Direction.BUY, 2, 4),
+			new Position(1, Direction.SELL, 1, 6),
+			new Position(2, Direction.BUY, 3, 2),
+			new Position(3, Direction.BUY, 4, 4)
 		]);
 
 		expect(holding.totalInvestment).toBe(24);
@@ -82,25 +82,25 @@ describe('Holding', () => {
 
 describe('Position', () => {
 	it('should return positive effective quantity if it is a buy position', () => {
-		const position = new Position(Direction.BUY, 2, 4);
+		const position = new Position(0, Direction.BUY, 2, 4);
 
 		expect(position.effectiveQuantity).toBe(2);
 	});
 
 	it('should return positive effective cost if it is a buy position', () => {
-		const position = new Position(Direction.BUY, 2, 4);
+		const position = new Position(0, Direction.BUY, 2, 4);
 
 		expect(position.effectiveCost).toBe(8);
 	});
 
 	it('should return negative effective quantity if it is a sell position', () => {
-		const position = new Position(Direction.SELL, 2, 4);
+		const position = new Position(0, Direction.SELL, 2, 4);
 
 		expect(position.effectiveQuantity).toBe(-2);
 	});
 
 	it('should return negative effective cost if it is a sell position', () => {
-		const position = new Position(Direction.SELL, 2, 4);
+		const position = new Position(0, Direction.SELL, 2, 4);
 
 		expect(position.effectiveCost).toBe(-8);
 	});

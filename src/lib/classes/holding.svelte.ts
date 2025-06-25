@@ -54,12 +54,20 @@ export const directionToString = {
 };
 
 export class Position {
+	readonly id: number;
 	readonly direction: Direction;
 	readonly quantity: number;
 	readonly unitCost: number;
 	readonly createdAt: Date;
 
-	constructor(direction: Direction, quantity: number, unitCost: number, createdAt?: Date) {
+	constructor(
+		id: number,
+		direction: Direction,
+		quantity: number,
+		unitCost: number,
+		createdAt?: Date
+	) {
+		this.id = id;
 		this.direction = direction;
 		this.quantity = quantity;
 		this.unitCost = unitCost;
