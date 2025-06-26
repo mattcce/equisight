@@ -1,0 +1,37 @@
+# Diagram 3: Financial Reports Caching
+# Direction: right
+# Theme: neutral-gray
+
+shape: sequence_diagram
+
+# --- Actors & Systems ---
+Client
+Backend: Backend Service
+Database: Database (Cache)
+ExternalAPI: External API (yfinance)
+
+# --- Flow ---
+Client -> Backend: GET /ticker/\{ticker\}/quarterly-reports|annual-reports
+
+Backend -> ExternalAPI: Peek for latest report's end date
+ExternalAPI -> Backend: Return latest report date
+
+Backend -> Database: Query for report matching that end date
+
+alt: {
+  "Cache Hit": {
+    Database -> Backend: Return cached report data
+  }
+
+  "Cache Miss": {
+    Database -> Backend: Report not found
+
+    Backend -> ExternalAPI: Request full financial statements
+    ExternalAPI -> Backend: Return full report data
+
+    Backend -> Database: Store new report data
+    Database -> Backend: Confirm data stored
+  }
+}
+
+Backend -> Client: 200 OK (with report

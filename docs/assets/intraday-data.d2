@@ -1,0 +1,49 @@
+# Diagram 2: Intraday & Intraweek Caching
+# Direction: right
+# Theme: neutral-gray
+
+shape: sequence_diagram
+
+# --- Actors & Systems ---
+Client
+Backend: Backend Service
+Database: Database (Cache)
+ExternalAPI: External API (yfinance)
+
+# --- Flow ---
+Client -> Backend: GET /ticker/\{ticker\}/intraday|intraweek
+
+Backend -> ExternalAPI: Get current market status
+ExternalAPI -> Backend: Return market status
+
+alt {
+  "Market is Open": {
+    Backend -> Database: Get timestamp of latest cached data point for today
+    Database -> Backend: Return latest timestamp
+    
+    Backend -> ExternalAPI: Request data since latest timestamp
+    ExternalAPI -> Backend: Return new data (if any)
+    
+    Backend -> Database: Store new data
+    Database -> Backend: Confirm data stored
+    
+    Backend -> Database: Query for all of today's data
+    Database -> Backend: Return complete data for the day
+  }
+
+  "Market is Closed": {
+    Backend -> Database: Get timestamp of latest cached data point for previous trading day
+    Database -> Backend: Return latest timestamp
+    
+    Backend -> ExternalAPI: Request data since latest timestamp
+    ExternalAPI -> Backend: Return new data (if any)
+    
+    Backend -> Database: Store new data
+    Database -> Backend: Confirm data stored
+    
+    Backend -> Database: Query for all of previous day's data
+    Database -> Backend: Return complete data for the day
+  }
+}
+
+Backend -> Client: 200 OK (with data)
