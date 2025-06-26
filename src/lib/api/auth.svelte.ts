@@ -18,7 +18,7 @@ export async function login(
 	onSuccessfulCallback?: () => void,
 	onErrorCallbacks?: { [key in LoginErrorCodes]?: () => void }
 ): Promise<void> {
-	const response = await fetch(`http://${PUBLIC_API_DOMAIN}/auth/login`, {
+	const response = await window.fetch(`http://${PUBLIC_API_DOMAIN}/auth/login`, {
 		method: 'POST',
 		body: new URLSearchParams({
 			username,
@@ -52,7 +52,7 @@ export async function register(
 	onSuccessfulCallback?: () => void,
 	onErrorCallbacks?: { [key in RegisterErrorCodes]: () => void }
 ): Promise<void> {
-	const response = await fetch(`http://${PUBLIC_API_DOMAIN}/auth/register`, {
+	const response = await window.fetch(`http://${PUBLIC_API_DOMAIN}/auth/register`, {
 		method: 'POST',
 		body: JSON.stringify({
 			email: username,
@@ -88,7 +88,7 @@ export async function logout(
 	onSuccessfulCallback?: () => void,
 	onErrorCallbacks?: { [errorCode: number]: () => void }
 ): Promise<void> {
-	const response = await fetch(`http://${PUBLIC_API_DOMAIN}/auth/logout`, {
+	const response = await window.fetch(`http://${PUBLIC_API_DOMAIN}/auth/logout`, {
 		method: 'POST',
 		credentials: 'include'
 	});
