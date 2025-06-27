@@ -1,13 +1,13 @@
 import { apiClient } from '$lib/api/client';
 import { type TickerInfo } from '$lib/classes/types';
-import { user } from '$lib/states/user.svelte';
+import { userStore } from '$lib/states/user.svelte';
 
 export async function load({ depends }): Promise<{
 	info: { [ticker: string]: TickerInfo };
 }> {
 	depends('data:tickerInfo');
 
-	const tickers: string[] = user.watchlistTickers;
+	const tickers: string[] = userStore.user!.watchlistTickers;
 
 	const tickersInfo = await Promise.all(
 		tickers.map((t) =>

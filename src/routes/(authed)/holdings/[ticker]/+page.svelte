@@ -16,7 +16,7 @@
 	import { Label } from '$lib/components/ui/label';
 	import Separator from '$lib/components/ui/separator/separator.svelte';
 	import * as Tabs from '$lib/components/ui/tabs';
-	import { commitAddPosition, user } from '$lib/states/user.svelte';
+	import { commitAddPosition, userStore } from '$lib/states/user.svelte';
 	import { formatDateTime, toISOStringWithTZ } from '$lib/utils';
 
 	import HoldingsViewer from './HoldingsViewer.svelte';
@@ -259,7 +259,7 @@
 						createdAt
 					);
 
-					user.addPosition(ticker, newPosition);
+					userStore.user!.addPosition(ticker, newPosition);
 
 					resetInputNewPosition();
 				}}

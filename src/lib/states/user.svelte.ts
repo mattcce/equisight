@@ -3,9 +3,13 @@ import type { userWatchlistTickerPostPositionsResponsePayload } from '$lib/api/r
 import { Direction, Position } from '$lib/classes/holding.svelte';
 import { User } from '$lib/classes/user.svelte';
 
-export const user: User = $state(await initialiseUser());
+export const userStore: { user: User | undefined } = $state({ user: undefined });
 
-async function initialiseUser(): Promise<User> {
+export function clearUserData(): void {
+	userStore.user = undefined;
+}
+
+export async function initialiseUser(): Promise<void> {
 	const identifier = await apiClient(`/users/me`, { method: 'GET' })
 		.then((r) => r.json())
 		.then((r) => r.email);
@@ -15,8 +19,6 @@ async function initialiseUser(): Promise<User> {
 	const watchlist = await apiClient(`/users/me/watchlist`, { method: 'GET' })
 		.then((r) => r.json())
 		.then((r) => r.tickers);
-
-	console.log(watchlist);
 
 	watchlist.forEach((t) => user.addTicker(t));
 
@@ -44,7 +46,7 @@ async function initialiseUser(): Promise<User> {
 		)
 	);
 
-	return user;
+	userStore.user = user;
 }
 
 export async function commitAddTicker(ticker: string): Promise<boolean> {

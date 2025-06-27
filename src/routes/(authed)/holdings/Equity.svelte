@@ -3,7 +3,7 @@
 	import { type TickerInfo } from '$lib/classes/types';
 	import BreathingIndicator from '$lib/components/BreathingIndicator.svelte';
 	import ColouredIndicator from '$lib/components/ColouredIndicator.svelte';
-	import { user } from '$lib/states/user.svelte';
+	import { userStore } from '$lib/states/user.svelte';
 
 	const { ticker, tickerData }: { ticker: string; tickerData: TickerInfo } = $props();
 
@@ -11,8 +11,8 @@
 		((tickerData?.regularMarketPrice ?? 0) - (tickerData?.previousClose ?? 0)) /
 		(tickerData?.previousClose ?? 0) * 100;
 	const unrealisedPL =
-		(tickerData?.regularMarketPrice ?? 0) * user.getHolding(ticker).totalQuantity -
-		user.getHolding(ticker).totalInvestment;
+		(tickerData?.regularMarketPrice ?? 0) * userStore.user!.getHolding(ticker).totalQuantity -
+		userStore.user!.getHolding(ticker).totalInvestment;
 </script>
 
 <div class="h-16 grow">
@@ -46,8 +46,8 @@
 			<div class="col-span-2 ml-auto text-xs">
 				<ColouredIndicator value={unrealisedPL} prefix="{tickerData.currency} " />
 				{tickerData.currency}
-				{user
-					.getHolding(ticker)
+				{userStore
+					.user!.getHolding(ticker)
 					.totalMarketValueAtUnitPrice(tickerData.regularMarketPrice)
 					.toFixed(2)}
 			</div>

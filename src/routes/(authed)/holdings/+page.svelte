@@ -13,13 +13,13 @@
 	import * as Drawer from '$lib/components/ui/drawer';
 	import Input from '$lib/components/ui/input/input.svelte';
 	import { Separator } from '$lib/components/ui/separator';
-	import { commitAddTicker, commitRemoveTicker, user } from '$lib/states/user.svelte';
+	import { commitAddTicker, commitRemoveTicker, userStore } from '$lib/states/user.svelte';
 
 	import Equity from './Equity.svelte';
 
 	const { data } = $props();
 
-	let tickers = $derived(user.watchlistTickers);
+	let tickers = $derived(userStore.user!.watchlistTickers);
 	let info = $derived(data.info);
 
 	// effect: refresh data
@@ -43,13 +43,15 @@
 
 	// svelte-ignore state_referenced_locally
 	const currentHoldings = tickers
-		.map((t) => user.getHolding(t).totalMarketValueAtUnitPrice(info[t]?.regularMarketPrice ?? 0))
+		.map((t) =>
+			userStore.user!.getHolding(t).totalMarketValueAtUnitPrice(info[t]?.regularMarketPrice ?? 0)
+		)
 		.reduce((x, y) => x + y, 0);
 	// svelte-ignore state_referenced_locally
 	const portfolioValueAtPreviousClose = tickers
 		.map((t) => {
 			const tickerInfo = info[t];
-			const holding = user.getHolding(t);
+			const holding = userStore.user!.getHolding(t);
 			return holding.totalMarketValueAtUnitPrice(tickerInfo?.previousClose ?? 0);
 		})
 		.reduce((x, y) => x + y, 0);
@@ -57,13 +59,13 @@
 	const portfolioValueNow = tickers
 		.map((t) => {
 			const tickerInfo = info[t];
-			const holding = user.getHolding(t);
+			const holding = userStore.user!.getHolding(t);
 			return holding.totalMarketValueAtUnitPrice(tickerInfo?.regularMarketPrice ?? 0);
 		})
 		.reduce((x, y) => x + y, 0);
 	// svelte-ignore state_referenced_locally
 	const portfolioInitialInvestment = tickers
-		.map((t) => user.getHolding(t).totalInvestment)
+		.map((t) => userStore.user!.getHolding(t).totalInvestment)
 		.reduce((x, y) => x + y, 0);
 	const portfolio1DDelta = portfolioValueNow - portfolioValueAtPreviousClose;
 	const portfolioOverallDelta = portfolioValueNow - portfolioInitialInvestment;
@@ -130,7 +132,7 @@
 					class="ml-2 h-full"
 					variant="destructive"
 					onclick={() => {
-						user.removeTicker(ticker);
+						userStore.user!.removeTicker(ticker);
 
 						commitRemoveTicker(ticker);
 					}}><X /></Button
@@ -169,7 +171,7 @@
 		<Drawer.Footer>
 			<Drawer.Close
 				onclick={() => {
-					const success = user.addTicker(inputNewTicker);
+					const success = userStore.user!.addTicker(inputNewTicker);
 
 					if (!success) {
 						toast.warning(`Ticker already in watchlist: ${inputNewTicker}.`);

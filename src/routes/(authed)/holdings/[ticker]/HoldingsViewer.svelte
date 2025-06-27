@@ -5,12 +5,12 @@
 
 	import { directionToString, Direction } from '$lib/classes/holding.svelte';
 	import * as Table from '$lib/components/ui/table';
-	import { commitRemovePosition, user } from '$lib/states/user.svelte';
+	import { commitRemovePosition, userStore } from '$lib/states/user.svelte';
 	import { formatDateTime } from '$lib/utils';
 
 	const { ticker, isEditingHoldings }: { ticker: string; isEditingHoldings: boolean } = $props();
 
-	let positions = $derived(user.getHolding(ticker).openPositions);
+	let positions = $derived(userStore.user!.getHolding(ticker).openPositions);
 </script>
 
 <Table.Root class="text-xs">
@@ -46,7 +46,7 @@
 							<div transition:slide={{ duration: 500, axis: 'x' }}>
 								<button
 									onclick={() => {
-										user.removePosition(ticker, pos);
+										userStore.user!.removePosition(ticker, pos);
 
 										const success = commitRemovePosition(ticker, pos.id);
 										console.log(success);

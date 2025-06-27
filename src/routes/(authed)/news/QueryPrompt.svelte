@@ -11,7 +11,7 @@
 	import { Label } from '$lib/components/ui/label';
 	import { ScrollArea } from '$lib/components/ui/scroll-area';
 	import { Separator } from '$lib/components/ui/separator';
-	import { user } from '$lib/states/user.svelte';
+	import { userStore } from '$lib/states/user.svelte';
 
 	const { requestCallback } = $props();
 
@@ -21,7 +21,7 @@
 		articlesPerTicker = Math.max(1, Math.min(100, articlesPerTicker + adjustment));
 	}
 
-	let tickersToQuery: SvelteSet<string> = new SvelteSet(user.watchlistTickers);
+	let tickersToQuery: SvelteSet<string> = new SvelteSet(userStore.user!.watchlistTickers);
 
 	function addTicker(ticker: string): void {
 		ticker = ticker.trim();
@@ -79,7 +79,7 @@
 
 			<Button
 				onclick={() => {
-					user.watchlistTickers.forEach((ticker) => {
+					userStore.user!.watchlistTickers.forEach((ticker) => {
 						addTicker(ticker);
 					});
 				}}

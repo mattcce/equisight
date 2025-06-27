@@ -1,11 +1,14 @@
 import { PUBLIC_API_DOMAIN } from '$env/static/public';
 import { authStore } from '$lib/states/auth.svelte';
+import { clearUserData, initialiseUser } from '$lib/states/user.svelte';
 
 export function handleUnauthorised(): void {
 	authStore.isAuthenticated = false;
 
 	// call logout route to invalidate session
 	fetch(`http://${PUBLIC_API_DOMAIN}/auth/logout`, { method: 'POST', credentials: 'include' });
+
+	clearUserData();
 }
 
 export enum LoginErrorCodes {
@@ -29,6 +32,7 @@ export async function login(
 
 	if (response.ok) {
 		authStore.isAuthenticated = true;
+		await initialiseUser();
 
 		if (onSuccessfulCallback) {
 			onSuccessfulCallback();
