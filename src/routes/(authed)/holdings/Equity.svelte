@@ -8,7 +8,8 @@
 	const { ticker, tickerData }: { ticker: string; tickerData: TickerInfo } = $props();
 
 	const dailyPercentageChange =
-		(tickerData?.regularMarketPrice ?? 0) - (tickerData?.previousClose ?? 0);
+		((tickerData?.regularMarketPrice ?? 0) - (tickerData?.previousClose ?? 0)) /
+		(tickerData?.previousClose ?? 0);
 	const unrealisedPL =
 		(tickerData?.regularMarketPrice ?? 0) * user.getHolding(ticker).totalQuantity -
 		user.getHolding(ticker).totalInvestment;
