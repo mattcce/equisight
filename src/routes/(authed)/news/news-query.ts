@@ -22,7 +22,22 @@ export async function executeNewsQuery(
 		)
 	);
 
-	const articles = responses.flatMap((a) => a.articles);
+	const pooledArticles = responses.flatMap((a) => a.articles);
+
+	// deduplicate list of articles
+	const seen = new Set();
+	const articles = [];
+
+	for (const a of pooledArticles) {
+		const key = a.id;
+		if (seen.has(key)) {
+			continue;
+		}
+
+		articles.push(a);
+		seen.add(key);
+	}
+
 	articles.sort((a1, a2) => Number(a2.timestamp) - Number(a1.timestamp));
 
 	const newsQuery = {
