@@ -18,39 +18,45 @@
 
 <div class="h-16 grow">
 	{#if tickerData}
-		<div class="grid grid-cols-3 justify-between gap-y-[4px]">
-			<div class="col-span-2">
-				<span class="font-mono font-bold">{tickerData.symbol}</span>
-				<BreathingIndicator
-					isOn={marketIsOpen(tickerData.marketState)}
-					display={tickerData.fullExchangeName}
-				></BreathingIndicator>
+		<div class="flex flex-col gap-y-[4px]">
+			<div class="flex flex-row justify-between">
+				<div>
+					<span class="font-mono font-bold">{tickerData.symbol}</span>
+					<BreathingIndicator
+						isOn={marketIsOpen(tickerData.marketState)}
+						display={tickerData.fullExchangeName}
+					></BreathingIndicator>
 
-				<span class="text-xs font-semibold">{tickerData.region}</span>
+					<span class="text-xs font-semibold">{tickerData.region}</span>
+				</div>
+
+				<div class="ml-auto">
+					<span class="text-xs [font-variant:smallcaps]">{tickerData.currency}</span>
+					<span class="font-mono">{tickerData.regularMarketPrice.toFixed(2)}</span>
+				</div>
 			</div>
 
-			<div class="ml-auto">
-				<span class="text-xs [font-variant:smallcaps]">{tickerData.currency}</span>
-				<span class="font-mono">{tickerData.regularMarketPrice.toFixed(2)}</span>
+			<div class="flex flex-row justify-between text-xs">
+				<div>
+					<span class="line-clamp-1 text-xs text-ellipsis">{tickerData.shortName}</span>
+				</div>
+
+				<div>
+					<ColouredIndicator value={dailyPercentageChange} suffix="%" />
+				</div>
 			</div>
 
-			<div class="col-span-2">
-				<span class="line-clamp-1 text-xs text-ellipsis">{tickerData.shortName}</span>
-			</div>
+			<div class="flex flex-row justify-between text-xs">
+				<div class="text-xs">Held ▶</div>
 
-			<div class="ml-auto flex items-center justify-items-end">
-				<ColouredIndicator value={dailyPercentageChange} suffix="%" />
-			</div>
-
-			<div class="text-xs">Held ▶</div>
-
-			<div class="col-span-2 ml-auto text-xs">
-				<ColouredIndicator value={unrealisedPL} prefix="{tickerData.currency} " />
-				{tickerData.currency}
-				{userStore
-					.user!.getHolding(ticker)
-					.totalMarketValueAtUnitPrice(tickerData.regularMarketPrice)
-					.toFixed(2)}
+				<div class="text-xs">
+					<ColouredIndicator value={unrealisedPL} prefix="{tickerData.currency} " />
+					{tickerData.currency}
+					{userStore
+						.user!.getHolding(ticker)
+						.totalMarketValueAtUnitPrice(tickerData.regularMarketPrice)
+						.toFixed(2)}
+				</div>
 			</div>
 		</div>
 
