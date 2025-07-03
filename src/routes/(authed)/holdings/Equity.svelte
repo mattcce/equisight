@@ -56,6 +56,14 @@
 
 		<div class="flex flex-row justify-between text-xs [font-variant:small-caps]"></div>
 	{:else}
-		<span class="font-mono font-bold">Loading...</span>
+		<div class="grid grid-cols-1 gap-y-[4px]">
+			<div class="flex flex-row justify-between">
+				<span class="font-mono font-bold">{ticker}</span>
+
+				<span class="font-mono">No Data</span>
+			</div>
+
+			<div class="text-xs"><span class="text-xs text-red-600">Possibly delisted</span></div>
+		</div>
 	{/if}
 </div>

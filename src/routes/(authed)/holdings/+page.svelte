@@ -21,6 +21,7 @@
 
 	let tickers = $derived(userStore.user!.watchlistTickers);
 	let info = $derived(data.info);
+	let forexRates = $derived(data.forexRates);
 
 	// effect: refresh data
 	if (PUBLIC_DATA_REFRESHING === 'true') {
@@ -44,23 +45,35 @@
 	let homeCurrency = $derived(userStore.user!.homeCurrency);
 	let currentHoldings = $derived.by(() =>
 		tickers
-			.map(
-				(t) =>
+			.map((t) => {
+				const tickerInfo = info[t];
+
+				if (!tickerInfo) {
+					return 0;
+				}
+
+				return (
 					userStore
 						.user!.getHolding(t)
 						.totalMarketValueAtUnitPrice(info[t]?.regularMarketPrice ?? 0) *
-					data.forexRates[data.info[t].currency]
-			)
+					forexRates[tickerInfo.currency]
+				);
+			})
 			.reduce((x, y) => x + y, 0)
 	);
 	let portfolioValueAtPreviousClose = $derived.by(() =>
 		tickers
 			.map((t) => {
 				const tickerInfo = info[t];
+
+				if (!tickerInfo) {
+					return 0;
+				}
+
 				const holding = userStore.user!.getHolding(t);
 				return (
 					holding.totalMarketValueAtUnitPrice(tickerInfo?.previousClose ?? 0) *
-					data.forexRates[data.info[t].currency]
+					forexRates[tickerInfo.currency]
 				);
 			})
 			.reduce((x, y) => x + y, 0)
@@ -69,20 +82,29 @@
 		tickers
 			.map((t) => {
 				const tickerInfo = info[t];
+
+				if (!tickerInfo) {
+					return 0;
+				}
 				const holding = userStore.user!.getHolding(t);
 				return (
 					holding.totalMarketValueAtUnitPrice(tickerInfo?.regularMarketPrice ?? 0) *
-					data.forexRates[data.info[t].currency]
+					forexRates[tickerInfo.currency]
 				);
 			})
 			.reduce((x, y) => x + y, 0)
 	);
 	let portfolioInitialInvestment = $derived.by(() =>
 		tickers
-			.map(
-				(t) =>
-					userStore.user!.getHolding(t).totalInvestment * data.forexRates[data.info[t].currency]
-			)
+			.map((t) => {
+				const tickerInfo = info[t];
+
+				if (!tickerInfo) {
+					return 0;
+				}
+
+				return userStore.user!.getHolding(t).totalInvestment * forexRates[tickerInfo.currency];
+			})
 			.reduce((x, y) => x + y, 0)
 	);
 	let portfolio1DDelta = $derived(portfolioValueNow - portfolioValueAtPreviousClose);
@@ -142,7 +164,11 @@
 {#each tickers as ticker (ticker)}
 	<div transition:slide={{ duration: 500, axis: 'y' }} class="flex flex-row items-center">
 		<a
-			class={['grow', isEditingWatchlist ? 'pointer-events-none' : 'pointer-events-auto']}
+			class={[
+				'grow',
+				!info[ticker] ? 'pointer-events-none' : 'pointer-events-auto',
+				isEditingWatchlist ? 'pointer-events-none' : 'pointer-events-auto'
+			]}
 			href={`/holdings/${ticker}`}
 		>
 			<Equity {ticker} tickerData={info[ticker]} />
@@ -192,16 +218,16 @@
 
 		<Drawer.Footer>
 			<Drawer.Close
-				onclick={() => {
-					const success = userStore.user!.addTicker(inputNewTicker);
+				onclick={async () => {
+					const response = await commitAddTicker(inputNewTicker);
 
-					if (!success) {
-						toast.warning(`Ticker already in watchlist: ${inputNewTicker}.`);
+					if (!response.ok) {
+						toast.error((await response.json()).detail);
 						inputNewTicker = '';
 						return;
 					}
 
-					commitAddTicker(inputNewTicker);
+					userStore.user!.addTicker(inputNewTicker);
 
 					inputNewTicker = '';
 				}}

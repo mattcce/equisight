@@ -49,8 +49,8 @@ export async function initialiseUser(): Promise<void> {
 	userStore.user = user;
 }
 
-export async function commitAddTicker(ticker: string): Promise<boolean> {
-	return apiClient(`/users/me/watchlist/${ticker}`, { method: 'POST' }).then((r) => r.ok);
+export async function commitAddTicker(ticker: string): Promise<Response> {
+	return apiClient(`/users/me/watchlist/${ticker}`, { method: 'POST' });
 }
 
 export async function commitRemoveTicker(ticker: string): Promise<boolean> {

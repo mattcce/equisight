@@ -11,20 +11,26 @@ export async function load({ depends }): Promise<{
 }> {
 	depends('data:holdings');
 
-	const tickers: string[] = userStore.user!.watchlistTickers;
+	let tickers: string[] = userStore.user!.watchlistTickers;
 
 	const info = Object.assign(
 		{},
 		...(await Promise.all(
 			tickers.map((t) =>
-				apiClient(`/ticker/${t}/info`, { method: 'GET' })
-					.then((r) => r.json())
-					.then((i) => {
-						return { [t]: i };
-					})
+				apiClient(`/ticker/${t}/info`, { method: 'GET' }).then((r) => {
+					if (r.ok) {
+						return r.json().then((i) => {
+							return { [t]: i };
+						});
+					} else {
+						return {};
+					}
+				})
 			)
 		))
 	);
+
+	tickers = tickers.filter((t) => t in info); // remove invalid tickers
 
 	// extract and deduplicate source currencies
 	const seen = new Set();
