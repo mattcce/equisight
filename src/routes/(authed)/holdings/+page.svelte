@@ -28,7 +28,7 @@
 		$effect(() => {
 			const refreshTickerInfo = setInterval(() => {
 				invalidate('data:holdings');
-			}, 5000);
+			}, 10000);
 
 			return () => clearInterval(refreshTickerInfo);
 		});
