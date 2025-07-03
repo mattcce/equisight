@@ -4,22 +4,58 @@ import { userStore } from '$lib/states/user.svelte';
 
 export async function load({ depends }): Promise<{
 	info: { [ticker: string]: TickerInfo };
+	homeCurrency: string;
+	forexRates: {
+		[sourceCurrency: string]: number;
+	};
 }> {
-	depends('data:tickerInfo');
+	depends('data:holdings');
 
 	const tickers: string[] = userStore.user!.watchlistTickers;
 
-	const tickersInfo = await Promise.all(
-		tickers.map((t) =>
-			apiClient(`/ticker/${t}/info`, { method: 'GET' })
+	const info = Object.assign(
+		{},
+		...(await Promise.all(
+			tickers.map((t) =>
+				apiClient(`/ticker/${t}/info`, { method: 'GET' })
+					.then((r) => r.json())
+					.then((i) => {
+						return { [t]: i };
+					})
+			)
+		))
+	);
+
+	// extract and deduplicate source currencies
+	const seen = new Set();
+	const sourceCurrencies = [];
+
+	for (const t of tickers) {
+		const currency = info[t].currency;
+		if (seen.has(currency)) {
+			continue;
+		}
+
+		sourceCurrencies.push(currency);
+		seen.add(currency);
+	}
+
+	const homeCurrency = userStore.user!.homeCurrency;
+
+	const forexRates = await Promise.all(
+		sourceCurrencies.map((c) =>
+			apiClient(`/forex?fromCur=${c}&toCur=${homeCurrency}`, { method: 'GET' })
 				.then((r) => r.json())
-				.then((i) => {
-					return { [t]: i };
+				.then((r) => r.forexRate)
+				.then((r) => {
+					return { [c]: r };
 				})
 		)
 	);
 
 	return {
-		info: Object.assign({}, ...tickersInfo)
+		info,
+		homeCurrency,
+		forexRates: Object.assign({}, ...forexRates)
 	};
 }

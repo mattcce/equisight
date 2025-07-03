@@ -92,3 +92,9 @@ export type userWatchlistTickerPostPositionsResponsePayload = {
 	unitCost: number;
 	createdAt: number;
 };
+
+export type forexRateResponsePayload = {
+	fromCurrency: string;
+	toCurrency: string;
+	forexRate: number;
+};

@@ -1,7 +1,10 @@
 import { Holding, Position } from './holding.svelte';
+import { type UserPreferences } from './types';
 
 export class User {
 	readonly #identifier: string;
+	#preferences: UserPreferences = { homeCurrency: 'SGD' };
+	// user preferences can only be changed in a different page altogether, to force refreshing/reloading all data dependent on user preferences
 	#watchlist: { [ticker: string]: Holding } = $state({});
 
 	constructor(identifier: string) {
@@ -14,6 +17,14 @@ export class User {
 
 	get watchlistTickers(): string[] {
 		return Object.keys(this.#watchlist);
+	}
+
+	get homeCurrency(): string {
+		return this.#preferences.homeCurrency;
+	}
+
+	set homeCurrency(currency: string) {
+		this.#preferences.homeCurrency = currency;
 	}
 
 	addTicker(ticker: string): boolean {

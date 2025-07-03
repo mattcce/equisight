@@ -43,3 +43,7 @@ export type FinancialReport = {
 	roa: number;
 	debtToEquity: number;
 };
+
+export type UserPreferences = {
+	homeCurrency: string;
+};

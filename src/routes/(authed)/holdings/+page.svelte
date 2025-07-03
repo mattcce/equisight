@@ -26,7 +26,7 @@
 	if (PUBLIC_DATA_REFRESHING === 'true') {
 		$effect(() => {
 			const refreshTickerInfo = setInterval(() => {
-				invalidate('data:tickerInfo');
+				invalidate('data:holdings');
 			}, 5000);
 
 			return () => clearInterval(refreshTickerInfo);
@@ -41,34 +41,52 @@
 	let isEditingWatchlist = $state(false);
 	let inputNewTicker = $state('');
 
-	// svelte-ignore state_referenced_locally
-	const currentHoldings = tickers
-		.map((t) =>
-			userStore.user!.getHolding(t).totalMarketValueAtUnitPrice(info[t]?.regularMarketPrice ?? 0)
-		)
-		.reduce((x, y) => x + y, 0);
-	// svelte-ignore state_referenced_locally
-	const portfolioValueAtPreviousClose = tickers
-		.map((t) => {
-			const tickerInfo = info[t];
-			const holding = userStore.user!.getHolding(t);
-			return holding.totalMarketValueAtUnitPrice(tickerInfo?.previousClose ?? 0);
-		})
-		.reduce((x, y) => x + y, 0);
-	// svelte-ignore state_referenced_locally
-	const portfolioValueNow = tickers
-		.map((t) => {
-			const tickerInfo = info[t];
-			const holding = userStore.user!.getHolding(t);
-			return holding.totalMarketValueAtUnitPrice(tickerInfo?.regularMarketPrice ?? 0);
-		})
-		.reduce((x, y) => x + y, 0);
-	// svelte-ignore state_referenced_locally
-	const portfolioInitialInvestment = tickers
-		.map((t) => userStore.user!.getHolding(t).totalInvestment)
-		.reduce((x, y) => x + y, 0);
-	const portfolio1DDelta = portfolioValueNow - portfolioValueAtPreviousClose;
-	const portfolioOverallDelta = portfolioValueNow - portfolioInitialInvestment;
+	let homeCurrency = $derived(userStore.user!.homeCurrency);
+	let currentHoldings = $derived.by(() =>
+		tickers
+			.map(
+				(t) =>
+					userStore
+						.user!.getHolding(t)
+						.totalMarketValueAtUnitPrice(info[t]?.regularMarketPrice ?? 0) *
+					data.forexRates[data.info[t].currency]
+			)
+			.reduce((x, y) => x + y, 0)
+	);
+	let portfolioValueAtPreviousClose = $derived.by(() =>
+		tickers
+			.map((t) => {
+				const tickerInfo = info[t];
+				const holding = userStore.user!.getHolding(t);
+				return (
+					holding.totalMarketValueAtUnitPrice(tickerInfo?.previousClose ?? 0) *
+					data.forexRates[data.info[t].currency]
+				);
+			})
+			.reduce((x, y) => x + y, 0)
+	);
+	let portfolioValueNow = $derived.by(() =>
+		tickers
+			.map((t) => {
+				const tickerInfo = info[t];
+				const holding = userStore.user!.getHolding(t);
+				return (
+					holding.totalMarketValueAtUnitPrice(tickerInfo?.regularMarketPrice ?? 0) *
+					data.forexRates[data.info[t].currency]
+				);
+			})
+			.reduce((x, y) => x + y, 0)
+	);
+	let portfolioInitialInvestment = $derived.by(() =>
+		tickers
+			.map(
+				(t) =>
+					userStore.user!.getHolding(t).totalInvestment * data.forexRates[data.info[t].currency]
+			)
+			.reduce((x, y) => x + y, 0)
+	);
+	let portfolio1DDelta = $derived(portfolioValueNow - portfolioValueAtPreviousClose);
+	let portfolioOverallDelta = $derived(portfolioValueNow - portfolioInitialInvestment);
 </script>
 
 <Card.Root>
@@ -77,25 +95,29 @@
 
 		<div>
 			<div class="text-center">
-				<span class="align-[4px] text-sm">S$</span>
+				<span class="align-[4px] text-sm">{userStore.user!.homeCurrency}</span>
 				<span class="text-xl">{currentHoldings.toFixed(2)}</span>
 			</div>
 		</div>
 	</Card.Header>
 
 	<Card.Content>
-		<div class="grid grid-cols-3 items-baseline">
+		<div class="grid grid-cols-4 items-baseline">
 			<div class="text-sm [font-variant:small-caps]">1d</div>
-			<div>
+			<div class="col-span-1">
 				<ColouredIndicator value={portfolio1DDelta / portfolioValueAtPreviousClose} suffix="%" />
 			</div>
-			<div><ColouredIndicator value={portfolio1DDelta} /></div>
+			<div class="col-span-2">
+				<ColouredIndicator value={portfolio1DDelta} suffix=" {homeCurrency}" />
+			</div>
 
 			<div class="text-sm [font-variant:small-caps]">Overall</div>
-			<div>
+			<div class="col-span-1">
 				<ColouredIndicator value={portfolioOverallDelta / portfolioInitialInvestment} suffix="%" />
 			</div>
-			<div><ColouredIndicator value={portfolioOverallDelta} /></div>
+			<div class="col-span-2">
+				<ColouredIndicator value={portfolioOverallDelta} suffix=" {homeCurrency}" />
+			</div>
 		</div>
 	</Card.Content>
 </Card.Root>
