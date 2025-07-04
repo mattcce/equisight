@@ -63,6 +63,7 @@
 		"prettier-plugin-tailwindcss": "^0.6.10",
 		"svelte": "^5.0.0",
 		"svelte-check": "^4.0.0",
+		"svelte-loading-spinners": "^0.3.6",
 		"svelte-sonner": "^1.0.5",
 		"sveltekit-superforms": "^2.26.1",
 		"tailwind-merge": "^3.3.0",

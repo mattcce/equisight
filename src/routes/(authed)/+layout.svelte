@@ -1,6 +1,8 @@
 <script lang="ts">
+	import { Moon } from 'svelte-loading-spinners';
+
 	import { goto } from '$app/navigation';
-	import { page } from '$app/state';
+	import { navigating, page } from '$app/state';
 	import NavButton from '$lib/components/NavButton.svelte';
 	import { authStore } from '$lib/states/auth.svelte';
 
@@ -27,7 +29,13 @@
 
 <TopNav />
 
-{@render children()}
+{#if navigating.to}
+	<div class="-my-20 flex h-screen flex-col items-center justify-center text-gray-500">
+		<Moon size="60" color="#000000" unit="px" duration="1s" />
+	</div>
+{:else}
+	{@render children()}
+{/if}
 
 <nav class="fixed bottom-0 left-0 z-1000 w-full bg-gray-100 p-3">
 	<div class="flex h-[43px] justify-center">
