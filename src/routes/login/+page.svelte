@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { LoaderCircle } from '@lucide/svelte';
+
 	import { Control } from 'formsnap';
 	import { toast } from 'svelte-sonner';
 	import { get } from 'svelte/store';
@@ -15,6 +17,9 @@
 	import { formSchema } from './schema.js';
 
 	let { data } = $props();
+
+	let isLoggingIn = $state(false);
+	let isRegistering = $state(false);
 
 	const form = superForm(data.form, {
 		validators: zodClient(formSchema)
@@ -69,10 +74,13 @@
 
 	<div class="flex flex-col space-y-2">
 		<Button
+			disabled={isLoggingIn || isRegistering}
 			class="mt-6"
-			onclick={() => {
+			onclick={async () => {
+				isLoggingIn = true;
+
 				const { username, password } = get(formData);
-				login(
+				await login(
 					username,
 					password,
 					() => {
@@ -81,14 +89,23 @@
 					},
 					loginFailedCallbacks
 				);
-			}}>Log In</Button
-		>
+
+				isLoggingIn = false;
+			}}
+			>Log In
+			{#if isLoggingIn}
+				<LoaderCircle class="animate-spin" />
+			{/if}
+		</Button>
 
 		<Button
+			disabled={isLoggingIn || isRegistering}
 			variant="outline"
-			onclick={() => {
+			onclick={async () => {
+				isRegistering = true;
+
 				const { username, password } = get(formData);
-				register(
+				await register(
 					username,
 					password,
 					() => {
@@ -97,7 +114,13 @@
 					},
 					registerFailedCallbacks
 				);
-			}}>Register</Button
-		>
+
+				isRegistering = false;
+			}}
+			>Register
+			{#if isRegistering}
+				<LoaderCircle class="animate-spin" />
+			{/if}
+		</Button>
 	</div>
 </div>
