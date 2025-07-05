@@ -7,13 +7,17 @@
 
 	const { ticker, tickerData }: { ticker: string; tickerData: TickerInfo } = $props();
 
-	const dailyPercentageChange =
-		(((tickerData?.regularMarketPrice ?? 0) - (tickerData?.previousClose ?? 0)) /
-			(tickerData?.previousClose ?? 0)) *
-		100;
-	const unrealisedPL =
-		(tickerData?.regularMarketPrice ?? 0) * userStore.user!.getHolding(ticker).totalQuantity -
-		userStore.user!.getHolding(ticker).totalInvestment;
+	let dailyPercentageChange = $derived.by(
+		() =>
+			(((tickerData?.regularMarketPrice ?? 0) - (tickerData?.previousClose ?? 0)) /
+				(tickerData?.previousClose ?? 0)) *
+			100
+	);
+	let unrealisedPL = $derived.by(
+		() =>
+			(tickerData?.regularMarketPrice ?? 0) * userStore.user!.getHolding(ticker).totalQuantity -
+			userStore.user!.getHolding(ticker).totalInvestment
+	);
 </script>
 
 <div class="h-16 grow">
