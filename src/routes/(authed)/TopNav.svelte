@@ -1,16 +1,12 @@
 <script lang="ts">
-	import { LogOut } from '@lucide/svelte';
-
-	import { toast } from 'svelte-sonner';
-
-	import { logout } from '$lib/api/auth.svelte';
 	import { navContext } from '$lib/classes/nav.svelte';
-	import Button from '$lib/components/ui/button/button.svelte';
+
+	import ProfilePrompt from './ProfilePrompt.svelte';
 </script>
 
 <div class="fixed top-0 left-0 z-1000 w-full bg-gray-100 p-3">
 	<div class="flex h-[43px] items-end justify-center">
-		<div class="flex grid w-xs grid-cols-3 flex-col items-end">
+		<div class="grid w-xs grid-cols-3 items-baseline-last">
 			{#if navContext.previous}
 				<a href={navContext.previous.route} aria-label="go back">
 					<div class="flex grow flex-row items-center text-xs">
@@ -48,14 +44,9 @@
 				<div></div>
 			{/if}
 
-			<Button
-				class="ml-auto w-12"
-				variant="ghost"
-				onclick={() =>
-					logout(() => {
-						toast.info('Logged out.');
-					})}><LogOut /></Button
-			>
+			<span class="mr-2 ml-auto">
+				<ProfilePrompt />
+			</span>
 		</div>
 	</div>
 </div>

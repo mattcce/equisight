@@ -27,3 +27,17 @@ export function setNavContext(
 	navContext.current = current;
 	navContext.previous = previous;
 }
+
+export function setNavContextCurrent(current: {
+	title: string;
+	supplement?: string;
+	route: string;
+}): void {
+	navContext.current = current;
+}
+
+export function setNavContextPrevious(
+	previous: { title: string; route: string } | undefined
+): void {
+	navContext.previous = previous;
+}
