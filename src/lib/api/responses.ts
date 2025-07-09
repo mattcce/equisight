@@ -98,3 +98,7 @@ export type forexRateResponsePayload = {
 	toCurrency: string;
 	forexRate: number;
 };
+
+export type UserPreferencesResponsePayload = {
+	currency: string;
+};

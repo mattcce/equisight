@@ -5,7 +5,7 @@
 
 	import { logout } from '$lib/api/auth.svelte';
 	import { navContext, setNavContextPrevious } from '$lib/classes/nav.svelte';
-	import Button, { buttonVariants } from '$lib/components/ui/button/button.svelte';
+	import { Button, buttonVariants } from '$lib/components/ui/button';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { userStore } from '$lib/states/user.svelte';
 </script>

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { ArrowDownUp, X } from '@lucide/svelte';
 
+	import { toast } from 'svelte-sonner';
 	import { slide } from 'svelte/transition';
 
 	import { directionToString, Direction } from '$lib/classes/holding.svelte';
@@ -45,11 +46,15 @@
 						<Table.Cell class="p-0">
 							<div transition:slide={{ duration: 500, axis: 'x' }}>
 								<button
-									onclick={() => {
-										userStore.user!.removePosition(ticker, pos);
+									onclick={async () => {
+										const success = await commitRemovePosition(ticker, pos.id);
 
-										const success = commitRemovePosition(ticker, pos.id);
-										console.log(success);
+										if (!success) {
+											toast.error(`Failed to remove ticker: ${ticker}.`);
+											return;
+										}
+
+										userStore.user!.removePosition(ticker, pos);
 									}}
 								>
 									<X class="size-4" />

@@ -19,6 +19,14 @@ export class User {
 		return Object.keys(this.#watchlist);
 	}
 
+	get preferences(): UserPreferences {
+		return this.#preferences;
+	}
+
+	set preferences(preferences: UserPreferences) {
+		this.#preferences = preferences;
+	}
+
 	get homeCurrency(): string {
 		return this.#preferences.homeCurrency;
 	}
@@ -66,4 +74,8 @@ export class User {
 
 		return holding;
 	}
+}
+
+export function validatePreferences(preferences: UserPreferences): void {
+	preferences.homeCurrency = preferences.homeCurrency.toUpperCase();
 }

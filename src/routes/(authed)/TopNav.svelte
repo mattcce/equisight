@@ -44,7 +44,7 @@
 				<div></div>
 			{/if}
 
-			<span class="mr-2 ml-auto">
+			<span class="ml-auto">
 				<ProfilePrompt />
 			</span>
 		</div>

@@ -1,6 +1,7 @@
 import { apiClient } from '$lib/api/client';
 import type { userWatchlistTickerPostPositionsResponsePayload } from '$lib/api/responses';
 import { Direction, Position } from '$lib/classes/holding.svelte';
+import type { UserPreferences } from '$lib/classes/types';
 import { User } from '$lib/classes/user.svelte';
 
 export const userStore: { user: User | undefined } = $state({ user: undefined });
@@ -46,6 +47,15 @@ export async function initialiseUser(): Promise<void> {
 		)
 	);
 
+	const preferences = await apiClient(`/users/me/preferences`, { method: 'GET' })
+		.then((r) => r.json())
+		.then((r) => {
+			return {
+				homeCurrency: r.currency
+			};
+		});
+	user.preferences = preferences;
+
 	userStore.user = user;
 }
 
@@ -85,5 +95,17 @@ export async function commitAddPosition(
 export async function commitRemovePosition(ticker: string, positionId: number): Promise<boolean> {
 	return apiClient(`/users/me/watchlist/${ticker}/positions/${positionId}`, {
 		method: 'DELETE'
+	}).then((r) => r.ok);
+}
+
+export async function commitPreferences(preferences: UserPreferences): Promise<boolean> {
+	return apiClient(`/users/me/preferences`, {
+		method: 'PUT',
+		body: JSON.stringify({
+			currency: preferences.homeCurrency
+		}),
+		headers: {
+			'Content-Type': 'application/json'
+		}
 	}).then((r) => r.ok);
 }
