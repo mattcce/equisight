@@ -61,6 +61,10 @@ export const flyAndScale = (
 	};
 };
 
+export function formatDateNumeric(d: Date): string {
+	return d.toISOString().split('T')[0];
+}
+
 export function formatDate(d: Date): string {
 	return format(d, PeriodType.Day, { variant: 'long' });
 }
@@ -109,4 +113,15 @@ export function toISOStringWithTZ(date: Date): string {
 		':' +
 		pad(Math.abs(tzo) % 60)
 	);
+}
+
+export function debounce(callback: () => void, wait: number) {
+	let timeoutId: number | undefined = undefined;
+
+	return () => {
+		window.clearTimeout(timeoutId);
+		timeoutId = window.setTimeout(() => {
+			callback();
+		}, wait);
+	};
 }

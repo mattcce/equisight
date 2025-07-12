@@ -14,10 +14,10 @@
 
 <div class="text-sm font-semibold">User Settings</div>
 
-<div class="flex flex-row items-baseline justify-between gap-2 text-sm">
+<div class="grid grid-cols-2 items-baseline gap-2 text-sm">
 	<span>Home Currency</span>
 
-	<Input class="w-1/2" bind:value={inputPreferences.homeCurrency} placeholder="Currency" />
+	<Input class="w-full" bind:value={inputPreferences.homeCurrency} placeholder="Currency" />
 </div>
 
 <Button
