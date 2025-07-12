@@ -11,6 +11,8 @@
 	import * as Tabs from '$lib/components/ui/tabs';
 	import { debounce, formatDateNumeric, formatDateTime, formatNumber } from '$lib/utils';
 
+	import { tools } from '../utils';
+
 	setNavContext(
 		{ title: 'Backtesting', supplement: 'Analysis Tool', route: '/analysis/backtesting' },
 		{
@@ -18,6 +20,8 @@
 			route: '/analysis'
 		}
 	);
+
+	const tool = tools.filter((t) => t.route === '/analysis/backtesting')[0];
 
 	type BacktestQuery = {
 		ticker: string;
@@ -28,8 +32,7 @@
 		dcaAmount?: number;
 		dcaFrequency?: string;
 	};
-	type BacktestResult = {
-		completedTimestamp: number;
+	type BacktestResult = BacktestQuery & {
 		totalInvested: number;
 		totalSharesPurchased: number;
 		averagePurchasePrice: number;
@@ -41,7 +44,10 @@
 		daysHeld: number;
 		numberOfPurchases: number;
 	};
-	type BacktestReport = BacktestQuery & BacktestResult;
+	type BacktestReport = BacktestQuery &
+		BacktestResult & {
+			completedTimestamp: number;
+		};
 	const historicalQueriesFromStorage = localStorage.getItem('backtestingHistoricalQueries');
 	let historicalQueries: BacktestReport[] = $state(
 		historicalQueriesFromStorage ? JSON.parse(historicalQueriesFromStorage) : []
@@ -103,17 +109,20 @@
 		isInvalidTicker = false;
 	});
 
-	function formatReport(report: BacktestReport): BacktestReport {
-		if (report.investmentType === 'lumpSum') {
-			report.investmentType = 'Lump Sum';
-			delete report.dcaAmount;
-			delete report.dcaFrequency;
+	function formatResult(result: BacktestResult): BacktestReport {
+		if (result.investmentType === 'lumpSum') {
+			result.investmentType = 'Lump Sum';
+			delete result.dcaAmount;
+			delete result.dcaFrequency;
 		} else {
-			report.investmentType = 'DCA';
-			delete report.lumpSumAmount;
+			result.investmentType = 'DCA';
+			delete result.lumpSumAmount;
 		}
 
+		const report = result as BacktestReport;
+
 		report.completedTimestamp = Date.now();
+
 		return report;
 	}
 
@@ -131,7 +140,7 @@
 		toast.success('Query successful!');
 		await response
 			.json()
-			.then((report) => (historicalQueries = [formatReport(report), ...historicalQueries]));
+			.then((result) => (historicalQueries = [formatResult(result), ...historicalQueries]));
 	}
 
 	const displayQueryParameterRows = [
@@ -158,11 +167,9 @@
 	];
 </script>
 
-<div class="text-sm font-semibold">Backtesting</div>
+<div class="text-sm font-semibold">{tool.title}</div>
 
-<div class="text-sm">
-	Obtain theoretical gains based on investment strategy on a ticker with historical data.
-</div>
+<div class="text-sm">{tool.description}</div>
 
 <Separator />
 
@@ -268,6 +275,6 @@
 			</Accordion.Item>
 		{/each}
 	{:else}
-		<div class="text-gray-600">No queries found. Make a query to see the result here.</div>
+		<div class="text-sm text-gray-600">No queries found. Make a query to see the result here.</div>
 	{/if}
 </Accordion.Root>

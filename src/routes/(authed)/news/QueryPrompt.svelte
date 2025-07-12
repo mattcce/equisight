@@ -1,9 +1,10 @@
 <script lang="ts">
-	import { X, Minus, Plus } from '@lucide/svelte';
+	import { X, Plus } from '@lucide/svelte';
 
 	import { toast } from 'svelte-sonner';
 	import { SvelteSet } from 'svelte/reactivity';
 
+	import IntegerInput from '$lib/components/IntegerInput.svelte';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Button, buttonVariants } from '$lib/components/ui/button';
 	import * as Dialog from '$lib/components/ui/dialog';
@@ -16,10 +17,6 @@
 	const { requestCallback } = $props();
 
 	let articlesPerTicker = $state(5);
-
-	function adjustArticlesPerTicker(adjustment: number): void {
-		articlesPerTicker = Math.max(1, Math.min(100, articlesPerTicker + adjustment));
-	}
 
 	let tickersToQuery: SvelteSet<string> = new SvelteSet(userStore.user!.watchlistTickers);
 
@@ -100,24 +97,8 @@
 			</div>
 
 			<Label class="mx-auto" for="count">Articles per Ticker</Label>
-			<div class="flex flex-row items-center justify-center space-x-6">
-				<Button
-					variant="ghost"
-					onclick={() => adjustArticlesPerTicker(-1)}
-					disabled={articlesPerTicker <= 1}
-				>
-					<Minus />
-				</Button>
-
-				<div class="w-3 text-center">{articlesPerTicker}</div>
-
-				<Button
-					variant="ghost"
-					onclick={() => adjustArticlesPerTicker(1)}
-					disabled={articlesPerTicker >= MAX_ARTICLE_LIMIT}
-				>
-					<Plus />
-				</Button>
+			<div class="mx-auto w-1/2">
+				<IntegerInput lowerLimit={0} bind:value={articlesPerTicker} />
 			</div>
 
 			<div
