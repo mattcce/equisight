@@ -21,50 +21,47 @@
 		}
 	);
 
-	const tool = tools.filter((t) => t.route === '/analysis/fair-value')[0];
+	const tool = tools.filter((t) => t.route === '/analysis/graham-value')[0];
 
-	type FairValueQuery = {
+	type GrahamValueQuery = {
 		ticker: string;
-		high: number;
-		stable: number;
+		terminal: number;
+		growth: number;
 	};
-	type FairValueResult = {
-		costOfEquity: number;
-		costOfDebt: number;
+	type GrahamValueResult = {
 		wacc: number;
-		roic: number;
-		expectedGrowthRate: number;
-		fairValue: number;
+		impliedGrowthRate: number;
+		grahamValue: number;
 	};
-	type FairValueReport = FairValueQuery & FairValueResult & { completedTimestamp: number };
-	const historicalQueriesFromStorage = localStorage.getItem('fairValuationHistoricalQueries');
-	let historicalQueries: FairValueReport[] = $state(
+	type GrahamValueReport = GrahamValueQuery & GrahamValueResult & { completedTimestamp: number };
+	const historicalQueriesFromStorage = localStorage.getItem('grahamValueHistoricalQueries');
+	let historicalQueries: GrahamValueReport[] = $state(
 		historicalQueriesFromStorage ? JSON.parse(historicalQueriesFromStorage) : []
 	);
 	$effect(() => {
 		if (historicalQueries) {
-			localStorage.setItem('fairValuationHistoricalQueries', JSON.stringify(historicalQueries));
+			localStorage.setItem('grahamValueHistoricalQueries', JSON.stringify(historicalQueries));
 		}
 	});
 
-	let fairValueQueryOptions: {
+	let grahamValueQueryOptions: {
 		ticker: string;
-		high: number;
-		stable: number;
+		terminal: string;
+		growth: number;
 	} = $state({
 		ticker: '',
-		high: 5,
-		stable: 5
+		terminal: '5.0',
+		growth: 5
 	});
 
 	let isInvalidTicker: boolean = $state(false);
 
 	const checkTickerValidity = debounce(async () => {
-		if (fairValueQueryOptions.ticker === '') {
+		if (grahamValueQueryOptions.ticker === '') {
 			return;
 		}
 
-		const response = await apiClient(`/ticker/${fairValueQueryOptions.ticker}/info`, {
+		const response = await apiClient(`/ticker/${grahamValueQueryOptions.ticker}/info`, {
 			method: 'GET'
 		});
 
@@ -75,28 +72,34 @@
 
 	$effect(() => {
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
-		let deps = [fairValueQueryOptions.ticker];
+		let deps = [grahamValueQueryOptions.ticker];
 
 		checkTickerValidity();
 	});
 
 	$effect(() => {
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
-		let deps = [fairValueQueryOptions.ticker];
+		let deps = [grahamValueQueryOptions.ticker];
 
 		isInvalidTicker = false;
 	});
 
-	function formatResult(result: FairValueResult): FairValueReport {
-		const report = Object.assign({}, fairValueQueryOptions, result, {
+	function formatResult(result: GrahamValueResult): GrahamValueReport {
+		const transformedQuery = {
+			ticker: grahamValueQueryOptions.ticker,
+			terminal: parseFloat(grahamValueQueryOptions.terminal),
+			growth: grahamValueQueryOptions.growth
+		};
+
+		const report = Object.assign({}, transformedQuery, result, {
 			completedTimestamp: Date.now()
-		}) as FairValueReport;
+		}) as GrahamValueReport;
 		return report;
 	}
 
 	async function submitFairValuationQuery(): Promise<void> {
 		const response = await apiClient(
-			`/analysis/${fairValueQueryOptions.ticker}/fairvalue?high=${fairValueQueryOptions.high}&stable=${fairValueQueryOptions.stable}`,
+			`/analysis/${grahamValueQueryOptions.ticker}/grahamvalue?terminal=${parseFloat(grahamValueQueryOptions.terminal)}&growth=${grahamValueQueryOptions.growth}`,
 			{ method: 'GET' }
 		);
 
@@ -113,17 +116,14 @@
 
 	const displayQueryParameterRows = [
 		{ key: 'ticker', display: 'Ticker' },
-		{ key: 'high', display: 'High Growth Years' },
-		{ key: 'stable', display: 'Stable Growth Years' }
+		{ key: 'terminal', display: 'Assumed Terminal Growth Rate (%)' },
+		{ key: 'growth', display: 'Assumed Continuous Growth Period (years)' }
 	];
 
 	const displayReportRows = [
-		{ key: 'costOfEquity', display: 'Cost of Equity' },
-		{ key: 'costOfDebt', display: 'Cost of Debt' },
 		{ key: 'wacc', display: 'WACC' },
-		{ key: 'roic', display: 'ROIC' },
-		{ key: 'expectedGrowthRate', display: 'Expected Growth Rate' },
-		{ key: 'fairValue', display: 'Fair Value' }
+		{ key: 'impliedGrowthRate', display: 'Implied Growth Rate (%)' },
+		{ key: 'grahamValue', display: 'Graham Value' }
 	];
 </script>
 
@@ -139,16 +139,18 @@
 
 <div class="grid grid-cols-2 items-center gap-2 text-sm">
 	<span>Ticker</span>
-	<Input aria-invalid={isInvalidTicker} class="w-full" bind:value={fairValueQueryOptions.ticker} />
+	<Input
+		aria-invalid={isInvalidTicker}
+		class="w-full"
+		bind:value={grahamValueQueryOptions.ticker}
+	/>
 
-	<span>High Growth Years</span>
-	<div>
-		<IntegerInput lowerLimit={0} bind:value={fairValueQueryOptions.high} />
-	</div>
+	<span>Assumed Terminal Growth Rate (%)</span>
+	<Input class="w-full" bind:value={grahamValueQueryOptions.terminal} />
 
-	<span>Stable Growth Years</span>
+	<span>Assumed Continuous Growth Period (years)</span>
 	<div>
-		<IntegerInput lowerLimit={0} bind:value={fairValueQueryOptions.stable} />
+		<IntegerInput lowerLimit={0} bind:value={grahamValueQueryOptions.growth} />
 	</div>
 </div>
 
@@ -169,11 +171,13 @@
 					<div class="text-center text-xs font-semibold">Parameters</div>
 					<Table.Root>
 						{#each displayQueryParameterRows as row (row.key)}
-							{#if historicalQuery[row.key as keyof FairValueQuery]}
-								<Table.Row class="grid grid-cols-2">
-									<Table.Cell class="text-right text-xs text-gray-600">{row.display}</Table.Cell>
+							{#if historicalQuery[row.key as keyof GrahamValueQuery]}
+								<Table.Row class="grid grid-cols-2 items-center">
+									<Table.Cell class="text-right text-xs text-gray-600">
+										<span class="text-wrap"> {row.display} </span>
+									</Table.Cell>
 									<Table.Cell class="text-xs"
-										>{historicalQuery[row.key as keyof FairValueQuery]}</Table.Cell
+										>{historicalQuery[row.key as keyof GrahamValueQuery]}</Table.Cell
 									>
 								</Table.Row>
 							{/if}
@@ -183,12 +187,12 @@
 					<div class="text-center text-xs font-semibold">Result</div>
 					<Table.Root>
 						{#each displayReportRows as row (row.key)}
-							{#if historicalQuery[row.key as keyof FairValueResult]}
+							{#if historicalQuery[row.key as keyof GrahamValueResult]}
 								<Table.Row class="grid grid-cols-2">
 									<Table.Cell class="text-right text-xs text-gray-600">{row.display}</Table.Cell>
 									<Table.Cell class="text-xs"
 										>{formatNumber(
-											historicalQuery[row.key as keyof FairValueResult] as number,
+											historicalQuery[row.key as keyof GrahamValueResult] as number,
 											3
 										)}</Table.Cell
 									>

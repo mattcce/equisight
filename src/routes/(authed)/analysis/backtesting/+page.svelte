@@ -175,7 +175,7 @@
 
 <div class="text-sm font-semibold">New Query</div>
 
-<div class="grid grid-cols-2 items-baseline gap-2 text-sm">
+<div class="grid grid-cols-2 items-center gap-2 text-sm">
 	<span>Ticker</span>
 	<Input
 		aria-invalid={isInvalidTicker}
