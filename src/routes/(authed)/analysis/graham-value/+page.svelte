@@ -3,6 +3,7 @@
 
 	import { apiClient } from '$lib/api/client';
 	import { setNavContext } from '$lib/classes/nav.svelte';
+	import ClearAllButton from '$lib/components/ClearAllButton.svelte';
 	import IntegerInput from '$lib/components/IntegerInput.svelte';
 	import * as Accordion from '$lib/components/ui/accordion';
 	import { Button } from '$lib/components/ui/button';
@@ -158,7 +159,11 @@
 
 <Separator />
 
-<div class="text-sm font-semibold">Past Queries</div>
+<div class="flex flex-row items-center justify-between text-sm">
+	<span class="font-semibold">Past Queries</span>
+
+	<ClearAllButton bind:target={historicalQueries} flushValueProducer={() => []} />
+</div>
 
 <Accordion.Root type="single" value="0">
 	{#if historicalQueries.length !== 0}
