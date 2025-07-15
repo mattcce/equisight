@@ -148,7 +148,10 @@
 
 <div class="flex flex-row items-center justify-between">
 	<span class="text-sm font-semibold">Watchlist</span>
-	<button onclick={() => (isEditingWatchlist = !isEditingWatchlist)} class="h-8 py-2 pl-2">
+	<button
+		onclick={() => (isEditingWatchlist = !isEditingWatchlist)}
+		class="toggle-edit h-8 py-2 pl-2"
+	>
 		{#if isEditingWatchlist}
 			<span in:fade={{ delay: 250, duration: 250 }} out:fade={{ duration: 250 }}>
 				<Check class="size-4" />
@@ -162,8 +165,9 @@
 </div>
 
 {#each tickers as ticker (ticker)}
-	<div transition:slide={{ duration: 500, axis: 'y' }} class="flex flex-row items-center">
+	<div transition:slide={{ duration: 500, axis: 'y' }} class="ticker flex flex-row items-center">
 		<a
+			id="ticker-page-{ticker}"
 			class={[
 				'grow',
 				!info[ticker] ? 'pointer-events-none' : 'pointer-events-auto',
@@ -177,7 +181,7 @@
 		{#if isEditingWatchlist}
 			<div class="h-full flex-shrink-0" transition:slide={{ duration: 500, axis: 'x' }}>
 				<Button
-					class="ml-2 h-full"
+					class="remove-ticker ml-2 h-full"
 					variant="destructive"
 					onclick={() => {
 						userStore.user!.removeTicker(ticker);

@@ -160,7 +160,10 @@
 
 <div class="flex flex-row items-center justify-between">
 	<span class="text-sm font-semibold">Holdings</span>
-	<button onclick={() => (isEditingHoldings = !isEditingHoldings)} class="h-8 py-2 pl-2">
+	<button
+		onclick={() => (isEditingHoldings = !isEditingHoldings)}
+		class="toggle-edit h-8 py-2 pl-2"
+	>
 		{#if isEditingHoldings}
 			<span in:fade={{ delay: 250, duration: 250 }} out:fade={{ duration: 250 }}>
 				<Check class="size-4" />

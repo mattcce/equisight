@@ -44,7 +44,7 @@
 <div class="flex flex-col space-y-2">
 	{#if lastNewsQuery}
 		{#each lastNewsQuery.articles as article (article.id)}
-			<Card.Root>
+			<Card.Root class="news-card">
 				<Card.Header class="-mb-4">
 					<img class="h-24 rounded-sm object-cover" src={article.thumbnailUrl} alt="thumbnail" />
 					<Card.Title><a href={article.canonicalUrl}>{article.title}</a></Card.Title>

@@ -25,7 +25,7 @@
 		<div class="flex flex-col gap-y-[4px]">
 			<div class="flex flex-row justify-between">
 				<div>
-					<span class="font-mono font-bold">{tickerData.symbol}</span>
+					<span class="equity-ticker-name font-mono font-bold">{tickerData.symbol}</span>
 					<BreathingIndicator
 						isOn={marketIsOpen(tickerData.marketState)}
 						display={tickerData.fullExchangeName}

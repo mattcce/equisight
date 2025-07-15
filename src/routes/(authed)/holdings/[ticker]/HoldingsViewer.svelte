@@ -46,6 +46,7 @@
 						<Table.Cell class="p-0">
 							<div transition:slide={{ duration: 500, axis: 'x' }}>
 								<button
+									class="delete-holding"
 									onclick={async () => {
 										const success = await commitRemovePosition(ticker, pos.id);
 

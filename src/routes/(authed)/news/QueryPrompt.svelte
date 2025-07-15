@@ -88,6 +88,7 @@
 			<div class="col-span-2 mb-6 flex flex-row space-x-2">
 				<Input bind:value={tickerToAdd} class="text-sm" placeholder="Add Ticker/Symbol" />
 				<Button
+					class="add-ticker"
 					onclick={() => {
 						addTicker(tickerToAdd.toUpperCase());
 						tickerToAdd = '';
