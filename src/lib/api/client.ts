@@ -1,7 +1,7 @@
-import { error } from '@sveltejs/kit';
-
 import { PUBLIC_API_DOMAIN } from '$env/static/public';
 import { handleUnauthorised } from '$lib/api/auth.svelte';
+
+import { fatal } from './fatal';
 
 export async function apiClient(route: string, requestInit: RequestInit): Promise<Response> {
 	try {
@@ -16,6 +16,7 @@ export async function apiClient(route: string, requestInit: RequestInit): Promis
 
 		return response;
 	} catch (e) {
-		throw error(400, JSON.stringify(e));
+		fatal(e.message);
+		throw e;
 	}
 }

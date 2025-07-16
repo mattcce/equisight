@@ -2,6 +2,8 @@ import { PUBLIC_API_DOMAIN } from '$env/static/public';
 import { authStore } from '$lib/states/auth.svelte';
 import { clearUserData, initialiseUser } from '$lib/states/user.svelte';
 
+import { fatal } from './fatal';
+
 export function handleUnauthorised(): void {
 	authStore.isAuthenticated = false;
 
@@ -21,16 +23,18 @@ export async function login(
 	onSuccessfulCallback?: () => void,
 	onErrorCallbacks?: { [key in LoginErrorCodes]?: () => void }
 ): Promise<void> {
-	const response = await window.fetch(`http://${PUBLIC_API_DOMAIN}/auth/login`, {
-		method: 'POST',
-		body: new URLSearchParams({
-			username,
-			password
-		}),
-		credentials: 'include'
-	});
+	const response = await window
+		.fetch(`http://${PUBLIC_API_DOMAIN}/auth/login`, {
+			method: 'POST',
+			body: new URLSearchParams({
+				username,
+				password
+			}),
+			credentials: 'include'
+		})
+		.catch((e) => fatal(e.message));
 
-	if (response.ok) {
+	if (response?.ok) {
 		authStore.isAuthenticated = true;
 		await initialiseUser();
 
@@ -38,7 +42,7 @@ export async function login(
 			onSuccessfulCallback();
 		}
 	} else {
-		const errorCode = response.status as LoginErrorCodes;
+		const errorCode = response?.status as LoginErrorCodes;
 
 		if (onErrorCallbacks && onErrorCallbacks[errorCode]) {
 			onErrorCallbacks[errorCode]();
@@ -56,26 +60,28 @@ export async function register(
 	onSuccessfulCallback?: () => void,
 	onErrorCallbacks?: { [key in RegisterErrorCodes]: () => void }
 ): Promise<void> {
-	const response = await window.fetch(`http://${PUBLIC_API_DOMAIN}/auth/register`, {
-		method: 'POST',
-		body: JSON.stringify({
-			email: username,
-			password: password,
-			is_active: true,
-			is_superuser: false,
-			is_verified: true
-		}),
-		headers: {
-			'Content-Type': 'application/json'
-		}
-	});
+	const response = await window
+		.fetch(`http://${PUBLIC_API_DOMAIN}/auth/register`, {
+			method: 'POST',
+			body: JSON.stringify({
+				email: username,
+				password: password,
+				is_active: true,
+				is_superuser: false,
+				is_verified: true
+			}),
+			headers: {
+				'Content-Type': 'application/json'
+			}
+		})
+		.catch((e) => fatal(e.message));
 
-	if (response.ok) {
+	if (response?.ok) {
 		if (onSuccessfulCallback) {
 			onSuccessfulCallback();
 		}
 	} else {
-		const errorCode = response.status as RegisterErrorCodes;
+		const errorCode = response?.status as RegisterErrorCodes;
 
 		if (onErrorCallbacks && onErrorCallbacks[errorCode]) {
 			console.log('here');
@@ -92,19 +98,23 @@ export async function logout(
 	onSuccessfulCallback?: () => void,
 	onErrorCallbacks?: { [errorCode: number]: () => void }
 ): Promise<void> {
-	const response = await window.fetch(`http://${PUBLIC_API_DOMAIN}/auth/logout`, {
-		method: 'POST',
-		credentials: 'include'
-	});
+	const response = await window
+		.fetch(`http://${PUBLIC_API_DOMAIN}/auth/logout`, {
+			method: 'POST',
+			credentials: 'include'
+		})
+		.catch((e) => fatal(e.message));
 
-	if (response.ok) {
+	if (response?.ok) {
 		authStore.isAuthenticated = false;
 		if (onSuccessfulCallback) {
 			onSuccessfulCallback();
 		}
 	} else {
-		if (onErrorCallbacks && onErrorCallbacks[response.status]) {
-			onErrorCallbacks[response.status]();
+		const errorCode = response?.status as LogoutErrorCodes;
+
+		if (onErrorCallbacks && onErrorCallbacks[errorCode]) {
+			onErrorCallbacks[errorCode]();
 		}
 	}
 }
