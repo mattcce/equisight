@@ -10,6 +10,7 @@
 	import { Input } from '$lib/components/ui/input';
 	import { Separator } from '$lib/components/ui/separator';
 	import * as Table from '$lib/components/ui/table';
+	import { getLocalStorage, GRAHAM_VALUE_HISTORY, setLocalStorage } from '$lib/storage';
 	import { debounce, formatDateTime, formatNumber } from '$lib/utils';
 
 	import { tools } from '../utils';
@@ -35,13 +36,10 @@
 		grahamValue: number;
 	};
 	type GrahamValueReport = GrahamValueQuery & GrahamValueResult & { completedTimestamp: number };
-	const historicalQueriesFromStorage = localStorage.getItem('grahamValueHistoricalQueries');
-	let historicalQueries: GrahamValueReport[] = $state(
-		historicalQueriesFromStorage ? JSON.parse(historicalQueriesFromStorage) : []
-	);
+	let historicalQueries: GrahamValueReport[] = $state(getLocalStorage(GRAHAM_VALUE_HISTORY, []));
 	$effect(() => {
 		if (historicalQueries) {
-			localStorage.setItem('grahamValueHistoricalQueries', JSON.stringify(historicalQueries));
+			setLocalStorage(GRAHAM_VALUE_HISTORY, historicalQueries);
 		}
 	});
 

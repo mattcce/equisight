@@ -10,6 +10,7 @@
 	import { Input } from '$lib/components/ui/input';
 	import { Separator } from '$lib/components/ui/separator';
 	import * as Table from '$lib/components/ui/table';
+	import { FAIR_VALUATION_HISTORY, getLocalStorage, setLocalStorage } from '$lib/storage';
 	import { debounce, formatDateTime, formatNumber } from '$lib/utils';
 
 	import { tools } from '../utils';
@@ -38,13 +39,10 @@
 		fairValue: number;
 	};
 	type FairValueReport = FairValueQuery & FairValueResult & { completedTimestamp: number };
-	const historicalQueriesFromStorage = localStorage.getItem('fairValuationHistoricalQueries');
-	let historicalQueries: FairValueReport[] = $state(
-		historicalQueriesFromStorage ? JSON.parse(historicalQueriesFromStorage) : []
-	);
+	let historicalQueries: FairValueReport[] = $state(getLocalStorage(FAIR_VALUATION_HISTORY, []));
 	$effect(() => {
 		if (historicalQueries) {
-			localStorage.setItem('fairValuationHistoricalQueries', JSON.stringify(historicalQueries));
+			setLocalStorage(FAIR_VALUATION_HISTORY, historicalQueries);
 		}
 	});
 

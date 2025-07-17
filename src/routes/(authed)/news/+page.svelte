@@ -2,18 +2,16 @@
 	import { setNavContext } from '$lib/classes/nav.svelte';
 	import * as Card from '$lib/components/ui/card';
 	import { Separator } from '$lib/components/ui/separator';
+	import { getLocalStorage, LAST_NEWS_QUERY, setLocalStorage } from '$lib/storage';
 	import { formatDateTime } from '$lib/utils';
 
 	import QueryPrompt from './QueryPrompt.svelte';
 	import { type NewsQuery, executeNewsQuery } from './news-query';
 
-	const lastNewsQueryFromStorage = localStorage.getItem('lastNewsQuery');
-	let lastNewsQuery: NewsQuery | undefined = $state(
-		lastNewsQueryFromStorage ? JSON.parse(lastNewsQueryFromStorage) : undefined
-	);
+	let lastNewsQuery: NewsQuery | undefined = $state(getLocalStorage(LAST_NEWS_QUERY, undefined));
 	$effect(() => {
 		if (lastNewsQuery) {
-			localStorage.setItem('lastNewsQuery', JSON.stringify(lastNewsQuery));
+			setLocalStorage(LAST_NEWS_QUERY, JSON.stringify(lastNewsQuery));
 		}
 	});
 

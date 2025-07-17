@@ -10,6 +10,7 @@
 	import { Separator } from '$lib/components/ui/separator';
 	import * as Table from '$lib/components/ui/table';
 	import * as Tabs from '$lib/components/ui/tabs';
+	import { BACKTESTING_HISTORY, getLocalStorage, setLocalStorage } from '$lib/storage';
 	import { debounce, formatDateNumeric, formatDateTime, formatNumber } from '$lib/utils';
 
 	import { tools } from '../utils';
@@ -49,13 +50,10 @@
 		BacktestResult & {
 			completedTimestamp: number;
 		};
-	const historicalQueriesFromStorage = localStorage.getItem('backtestingHistoricalQueries');
-	let historicalQueries: BacktestReport[] = $state(
-		historicalQueriesFromStorage ? JSON.parse(historicalQueriesFromStorage) : []
-	);
+	let historicalQueries: BacktestReport[] = $state(getLocalStorage(BACKTESTING_HISTORY, []));
 	$effect(() => {
 		if (historicalQueries) {
-			localStorage.setItem('backtestingHistoricalQueries', JSON.stringify(historicalQueries));
+			setLocalStorage(BACKTESTING_HISTORY, historicalQueries);
 		}
 	});
 
