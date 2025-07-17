@@ -1,13 +1,12 @@
 <script lang="ts">
-	import { Check, Edit, Plus } from '@lucide/svelte';
+	import { Check, Edit, LoaderCircle, Plus } from '@lucide/svelte';
 
-	import { scaleLinear, scaleTime } from 'd3-scale';
-	import { Highlight, Chart, Svg, Axis, Spline, Grid, Tooltip, Text } from 'layerchart';
 	import { toast } from 'svelte-sonner';
 	import { fade } from 'svelte/transition';
 
 	import { marketIsOpen } from '$lib/api/utils';
 	import { setNavContext } from '$lib/classes/nav.svelte';
+	import type { PriceDataFrame } from '$lib/classes/types';
 	import BreathingIndicator from '$lib/components/BreathingIndicator.svelte';
 	import { Button, buttonVariants } from '$lib/components/ui/button';
 	import * as Drawer from '$lib/components/ui/drawer';
@@ -16,23 +15,15 @@
 	import Separator from '$lib/components/ui/separator/separator.svelte';
 	import * as Tabs from '$lib/components/ui/tabs';
 	import { commitAddPosition } from '$lib/states/user.svelte';
-	import { formatDateTime, toISOStringWithTZ } from '$lib/utils';
+	import { toISOStringWithTZ } from '$lib/utils';
 
 	import HoldingsViewer from './HoldingsViewer.svelte';
+	import PriceDataViewer from './PriceDataViewer.svelte';
 	import ReportViewer from './ReportViewer.svelte';
+	import { tickerPriceHistoryRetrievers } from './utils';
 
 	const { data } = $props();
-	const {
-		ticker,
-		info,
-		marketOpen,
-		marketClose,
-		intradayPrices,
-		intradayMin,
-		intradayMax,
-		quarterlyReports,
-		annualReports
-	} = data;
+	const { ticker, info, quarterlyReports, annualReports } = data;
 
 	setNavContext(
 		{
@@ -47,6 +38,7 @@
 	);
 
 	let priceHistoryDisplayPeriod = $state('1D');
+	let cachedPriceData: { [period: string]: Promise<PriceDataFrame> } = {};
 	let financialReportDisplayPeriod = $state('quarterly');
 	let isEditingHoldings = $state(false);
 
@@ -66,6 +58,14 @@
 			unitCost: '0',
 			createdAt: toISOStringWithTZ(now)
 		};
+	}
+
+	function getPriceData(period: string): Promise<PriceDataFrame> {
+		if (period in cachedPriceData) {
+			return cachedPriceData[period];
+		}
+
+		return (cachedPriceData[period] = tickerPriceHistoryRetrievers[period](ticker));
 	}
 </script>
 
@@ -88,7 +88,7 @@
 	<Tabs.Root bind:value={priceHistoryDisplayPeriod}>
 		<Tabs.List>
 			<Tabs.Trigger class="text-xs" value="1D">1D</Tabs.Trigger>
-			<Tabs.Trigger class="text-xs" value="5D">5D</Tabs.Trigger>
+			<Tabs.Trigger class="text-xs" value="1W">1W</Tabs.Trigger>
 			<Tabs.Trigger class="text-xs" value="1M">1M</Tabs.Trigger>
 			<Tabs.Trigger class="text-xs" value="1Y">1Y</Tabs.Trigger>
 			<Tabs.Trigger class="text-xs" value="5Y">5Y</Tabs.Trigger>
@@ -97,64 +97,21 @@
 	</Tabs.Root>
 </div>
 
-<div class="h-[300px]">
-	<Chart
-		data={intradayPrices}
-		x="timestamp"
-		xScale={scaleTime()}
-		xDomain={[marketOpen, marketClose]}
-		xNice
-		y="close"
-		yScale={scaleLinear().nice()}
-		yDomain={[intradayMin, intradayMax]}
-		padding={{ top: 24, bottom: 24 }}
-		tooltip={{ mode: 'voronoi' }}
+{#await getPriceData(priceHistoryDisplayPeriod)}
+	<div
+		class="flex h-[300px] flex-col justify-center text-center text-sm font-semibold text-gray-600"
 	>
-		<Svg>
-			<Grid
-				y={{ class: 'stroke-gray-400 [stroke-dasharray:4]' }}
-				yTicks={(scale) => scale.ticks?.().filter(Number.isInteger)}
-			/>
-			<Grid y={{ class: 'stroke-gray-400' }} yTicks={(scale) => scale.domain()} />
-			<Axis placement="bottom" rule ticks={(scale) => scale.domain()} format={formatDateTime}>
-				<svelte:fragment slot="tickLabel" let:labelProps let:index>
-					<Text {...labelProps} textAnchor={index === 0 ? 'start' : 'end'} />
-				</svelte:fragment>
-			</Axis>
-			<Text
-				class="text-[10px] font-light"
-				x={0}
-				y={-6}
-				textAnchor="start"
-				verticalAnchor="end"
-				value={`Min: ${intradayMin.toFixed(2)}`}
-			/>
-			<Text
-				class="text-[10px] font-light"
-				x={320}
-				y={-6}
-				textAnchor="end"
-				verticalAnchor="end"
-				value={`Max: ${intradayMax.toFixed(2)}`}
-			/>
-			<Spline class="stroke-primary stroke-1" />
-			<Highlight points lines={{ stroke: 'grey' }} axis="both" />
-		</Svg>
-
-		<Tooltip.Root
-			x="data"
-			y={0}
-			anchor="top"
-			class="bg-surface-100 rounded-sm border border-primary px-2 py-[2px] text-[10px] font-semibold whitespace-nowrap text-primary"
-		>
-			{#snippet children({ data })}
-				{formatDateTime(data.timestamp)}: {info.currency}
-				{data.close.toFixed(2)}
-			{/snippet}
-		</Tooltip.Root>
-	</Chart>
-</div>
-
+		<div>Retrieving price data. <LoaderCircle class="inline-block size-3 animate-spin" /></div>
+	</div>
+{:then df}
+	<PriceDataViewer {df} />
+{:catch err}
+	<div
+		class="flex h-[300px] flex-col justify-center text-center text-sm font-semibold text-red-600"
+	>
+		Failed to retrieve price data: {err}
+	</div>
+{/await}
 <Separator />
 
 <div class="flex flex-row items-center justify-between">

@@ -125,3 +125,7 @@ export function debounce(callback: () => void, wait: number) {
 		}, wait);
 	};
 }
+
+export function sleep(ms: number): Promise<void> {
+	return new Promise((resolve) => setTimeout(resolve, ms));
+}

@@ -24,6 +24,14 @@ export type PriceHistoryEntry = {
 	close: number;
 };
 
+export type PriceDataFrame = {
+	marketOpen: Date;
+	marketClose: Date;
+	minPrice: number;
+	maxPrice: number;
+	priceData: PriceHistoryEntry[];
+};
+
 export type FinancialReport = {
 	title: string;
 	revenue: number;
