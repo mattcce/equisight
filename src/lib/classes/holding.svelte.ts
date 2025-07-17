@@ -31,15 +31,11 @@ export class Holding {
 		this.#positions.push(position);
 	}
 
-	removeOpenPosition(position: Position): boolean {
-		const index = this.#positions.indexOf(position);
+	removeOpenPosition(positionId: number): boolean {
+		const countBefore = this.#positions.length;
+		this.#positions = this.#positions.filter((p) => p.id !== positionId);
 
-		if (index < 0 || index >= this.#positions.length) {
-			return false;
-		}
-
-		this.#positions = this.#positions.toSpliced(index, 1);
-		return true;
+		return countBefore !== this.#positions.length;
 	}
 }
 

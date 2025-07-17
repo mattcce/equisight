@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { Plus, X, Check, Edit } from '@lucide/svelte';
 
-	import { toast } from 'svelte-sonner';
 	import { slide, fade } from 'svelte/transition';
 
 	import { invalidate } from '$app/navigation';
@@ -184,8 +183,6 @@
 					class="remove-ticker ml-2 h-full"
 					variant="destructive"
 					onclick={() => {
-						userStore.user!.removeTicker(ticker);
-
 						commitRemoveTicker(ticker);
 					}}><X /></Button
 				>
@@ -223,15 +220,7 @@
 		<Drawer.Footer>
 			<Drawer.Close
 				onclick={async () => {
-					const response = await commitAddTicker(inputNewTicker);
-
-					if (!response.ok) {
-						toast.error((await response.json()).detail);
-						inputNewTicker = '';
-						return;
-					}
-
-					userStore.user!.addTicker(inputNewTicker);
+					await commitAddTicker(inputNewTicker);
 
 					inputNewTicker = '';
 				}}

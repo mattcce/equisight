@@ -7,7 +7,6 @@
 	import { fade } from 'svelte/transition';
 
 	import { marketIsOpen } from '$lib/api/utils';
-	import { Direction, Position } from '$lib/classes/holding.svelte';
 	import { setNavContext } from '$lib/classes/nav.svelte';
 	import BreathingIndicator from '$lib/components/BreathingIndicator.svelte';
 	import { Button, buttonVariants } from '$lib/components/ui/button';
@@ -16,7 +15,7 @@
 	import { Label } from '$lib/components/ui/label';
 	import Separator from '$lib/components/ui/separator/separator.svelte';
 	import * as Tabs from '$lib/components/ui/tabs';
-	import { commitAddPosition, userStore } from '$lib/states/user.svelte';
+	import { commitAddPosition } from '$lib/states/user.svelte';
 	import { formatDateTime, toISOStringWithTZ } from '$lib/utils';
 
 	import HoldingsViewer from './HoldingsViewer.svelte';
@@ -243,26 +242,7 @@
 						return;
 					}
 
-					const positionResponse = await commitAddPosition(ticker, direction, quantity, unitCost);
-
-					if (!positionResponse) {
-						toast.error('Failed to add position');
-						resetInputNewPosition();
-						return;
-					}
-
-					const id = positionResponse.id;
-					const createdAt = new Date(positionResponse.createdAt * 1000);
-
-					const newPosition = new Position(
-						id,
-						direction === 'BUY' ? Direction.BUY : Direction.SELL,
-						quantity,
-						unitCost,
-						createdAt
-					);
-
-					userStore.user!.addPosition(ticker, newPosition);
+					await commitAddPosition(ticker, direction, quantity, unitCost);
 
 					resetInputNewPosition();
 				}}

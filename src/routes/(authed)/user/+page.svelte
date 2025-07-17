@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { toast } from 'svelte-sonner';
-
 	import { setNavContextCurrent } from '$lib/classes/nav.svelte';
 	import { validatePreferences } from '$lib/classes/user.svelte';
 	import { Button } from '$lib/components/ui/button';
@@ -27,12 +25,7 @@
 		const success = await commitPreferences(inputPreferences);
 
 		if (!success) {
-			toast.error('Failed to update settings.');
 			inputPreferences = userStore.user!.preferences;
-			return;
 		}
-
-		userStore.user!.preferences = inputPreferences;
-		toast.success('Settings updated!');
 	}}>Save Settings</Button
 >

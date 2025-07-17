@@ -61,8 +61,8 @@ export class User {
 		this.#watchlist[ticker].addOpenPosition(position);
 	}
 
-	removePosition(ticker: string, position: Position): boolean {
-		return this.#watchlist[ticker].removeOpenPosition(position);
+	removePosition(ticker: string, positionId: number): boolean {
+		return this.#watchlist[ticker].removeOpenPosition(positionId);
 	}
 
 	getHolding(ticker: string): Holding {

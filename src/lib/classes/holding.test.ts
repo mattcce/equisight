@@ -67,7 +67,7 @@ describe('Holding', () => {
 
 		expect(holding.totalInvestment).toBe(24);
 
-		holding.removeOpenPosition(holding.openPositions[2]);
+		holding.removeOpenPosition(2);
 
 		expect(holding.totalInvestment).toBe(18);
 	});

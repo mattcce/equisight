@@ -1,5 +1,6 @@
+import { toast } from 'svelte-sonner';
+
 import { apiClient } from '$lib/api/client';
-import type { userWatchlistTickerPostPositionsResponsePayload } from '$lib/api/responses';
 import { Direction, Position } from '$lib/classes/holding.svelte';
 import type { UserPreferences } from '$lib/classes/types';
 import { User } from '$lib/classes/user.svelte';
@@ -59,12 +60,28 @@ export async function initialiseUser(): Promise<void> {
 	userStore.user = user;
 }
 
-export async function commitAddTicker(ticker: string): Promise<Response> {
-	return apiClient(`/users/me/watchlist/${ticker}`, { method: 'POST' });
+export async function commitAddTicker(ticker: string): Promise<boolean> {
+	const response = await apiClient(`/users/me/watchlist/${ticker}`, { method: 'POST' });
+
+	if (!response.ok) {
+		toast.error(`Failed to add ticker: ${ticker}. This ticker may not exist.`);
+		return false;
+	}
+
+	userStore.user!.addTicker(ticker);
+	return true;
 }
 
 export async function commitRemoveTicker(ticker: string): Promise<boolean> {
-	return apiClient(`/users/me/watchlist/${ticker}`, { method: 'DELETE' }).then((r) => r.ok);
+	const response = await apiClient(`/users/me/watchlist/${ticker}`, { method: 'DELETE' });
+
+	if (!response.ok) {
+		toast.error(`Failed to remove ticker: ${ticker}.`);
+		return false;
+	}
+
+	userStore.user!.removeTicker(ticker);
+	return false;
 }
 
 export async function commitAddPosition(
@@ -72,8 +89,8 @@ export async function commitAddPosition(
 	direction: string,
 	quantity: number,
 	unitCost: number
-): Promise<userWatchlistTickerPostPositionsResponsePayload | undefined> {
-	return apiClient(`/users/me/watchlist/${ticker}/positions`, {
+): Promise<boolean> {
+	const response = await apiClient(`/users/me/watchlist/${ticker}/positions`, {
 		method: 'POST',
 		body: JSON.stringify({
 			direction,
@@ -83,23 +100,45 @@ export async function commitAddPosition(
 		headers: {
 			'Content-Type': 'application/json'
 		}
-	}).then((r) => {
-		if (r.ok) {
-			return r.json();
-		} else {
-			return undefined;
-		}
 	});
+
+	if (!response.ok) {
+		toast.error(`Failed to add position: inputs may be invalid.`);
+		return false;
+	}
+
+	const result = await response.json();
+	const id = result.id;
+	const createdAt = new Date(result.createdAt * 1000);
+
+	const newPosition = new Position(
+		id,
+		direction === 'BUY' ? Direction.BUY : Direction.SELL,
+		quantity,
+		unitCost,
+		createdAt
+	);
+
+	userStore.user!.addPosition(ticker, newPosition);
+	return true;
 }
 
 export async function commitRemovePosition(ticker: string, positionId: number): Promise<boolean> {
-	return apiClient(`/users/me/watchlist/${ticker}/positions/${positionId}`, {
+	const response = await apiClient(`/users/me/watchlist/${ticker}/positions/${positionId}`, {
 		method: 'DELETE'
-	}).then((r) => r.ok);
+	});
+
+	if (!response.ok) {
+		toast.error(`Failed to remove position for ticker ${ticker}.`);
+		return false;
+	}
+
+	userStore.user!.removePosition(ticker, positionId);
+	return true;
 }
 
 export async function commitPreferences(preferences: UserPreferences): Promise<boolean> {
-	return apiClient(`/users/me/preferences`, {
+	const response = await apiClient(`/users/me/preferences`, {
 		method: 'PUT',
 		body: JSON.stringify({
 			currency: preferences.homeCurrency
@@ -107,5 +146,14 @@ export async function commitPreferences(preferences: UserPreferences): Promise<b
 		headers: {
 			'Content-Type': 'application/json'
 		}
-	}).then((r) => r.ok);
+	});
+
+	if (!response.ok) {
+		toast.error('Failed to update settings.');
+		return false;
+	}
+
+	userStore.user!.preferences = preferences;
+	toast.success('Settings updated!');
+	return true;
 }

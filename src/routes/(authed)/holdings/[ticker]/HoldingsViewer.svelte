@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { ArrowDownUp, X } from '@lucide/svelte';
 
-	import { toast } from 'svelte-sonner';
 	import { slide } from 'svelte/transition';
 
 	import { directionToString, Direction } from '$lib/classes/holding.svelte';
@@ -48,14 +47,7 @@
 								<button
 									class="delete-holding"
 									onclick={async () => {
-										const success = await commitRemovePosition(ticker, pos.id);
-
-										if (!success) {
-											toast.error(`Failed to remove ticker: ${ticker}.`);
-											return;
-										}
-
-										userStore.user!.removePosition(ticker, pos);
+										await commitRemovePosition(ticker, pos.id);
 									}}
 								>
 									<X class="size-4" />
