@@ -5,15 +5,21 @@
 	import { setNavContext } from '$lib/classes/nav.svelte';
 	import ClearAllButton from '$lib/components/ClearAllButton.svelte';
 	import IntegerInput from '$lib/components/IntegerInput.svelte';
+	import ReportViewer from '$lib/components/ReportViewer.svelte';
 	import * as Accordion from '$lib/components/ui/accordion';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import { Separator } from '$lib/components/ui/separator';
-	import * as Table from '$lib/components/ui/table';
 	import { FAIR_VALUATION_HISTORY, getLocalStorage, setLocalStorage } from '$lib/storage';
-	import { debounce, formatDateTime, formatNumber } from '$lib/utils';
+	import { debounce, formatDateTime } from '$lib/utils';
 
 	import { tools } from '../utils';
+	import {
+		type FairValueReport,
+		type FairValueResult,
+		displayQueryParameterRows,
+		displayReportRows
+	} from './utils';
 
 	setNavContext(
 		{ title: 'Fair Valuation', supplement: 'Analysis Tool', route: '/analysis/fair-value' },
@@ -25,20 +31,6 @@
 
 	const tool = tools.filter((t) => t.route === '/analysis/fair-value')[0];
 
-	type FairValueQuery = {
-		ticker: string;
-		high: number;
-		stable: number;
-	};
-	type FairValueResult = {
-		costOfEquity: number;
-		costOfDebt: number;
-		wacc: number;
-		roic: number;
-		expectedGrowthRate: number;
-		fairValue: number;
-	};
-	type FairValueReport = FairValueQuery & FairValueResult & { completedTimestamp: number };
 	let historicalQueries: FairValueReport[] = $state(getLocalStorage(FAIR_VALUATION_HISTORY, []));
 	$effect(() => {
 		if (historicalQueries) {
@@ -109,21 +101,6 @@
 			.json()
 			.then((result) => (historicalQueries = [formatResult(result), ...historicalQueries]));
 	}
-
-	const displayQueryParameterRows = [
-		{ key: 'ticker', display: 'Ticker' },
-		{ key: 'high', display: 'High Growth Years' },
-		{ key: 'stable', display: 'Stable Growth Years' }
-	];
-
-	const displayReportRows = [
-		{ key: 'costOfEquity', display: 'Cost of Equity' },
-		{ key: 'costOfDebt', display: 'Cost of Debt' },
-		{ key: 'wacc', display: 'WACC' },
-		{ key: 'roic', display: 'ROIC' },
-		{ key: 'expectedGrowthRate', display: 'Expected Growth Rate' },
-		{ key: 'fairValue', display: 'Fair Value' }
-	];
 </script>
 
 <div class="text-sm font-semibold">{tool.title}</div>
@@ -161,44 +138,22 @@
 	<ClearAllButton bind:target={historicalQueries} flushValueProducer={() => []} />
 </div>
 
-<Accordion.Root type="single" value="0">
+<Accordion.Root
+	type="single"
+	value={historicalQueries[0]?.completedTimestamp.toString() ?? undefined}
+>
 	{#if historicalQueries.length !== 0}
 		{#each historicalQueries as historicalQuery (historicalQuery.completedTimestamp)}
-			<Accordion.Item>
-				<Accordion.Trigger class="text-sm" value={historicalQuery.completedTimestamp.toString()}
+			<Accordion.Item value={historicalQuery.completedTimestamp.toString()}>
+				<Accordion.Trigger class="text-sm"
 					>{formatDateTime(new Date(historicalQuery.completedTimestamp))}</Accordion.Trigger
 				>
 				<Accordion.Content class="flex flex-col gap-2">
 					<div class="text-center text-xs font-semibold">Parameters</div>
-					<Table.Root>
-						{#each displayQueryParameterRows as row (row.key)}
-							{#if historicalQuery[row.key as keyof FairValueQuery]}
-								<Table.Row class="grid grid-cols-2">
-									<Table.Cell class="text-right text-xs text-gray-600">{row.display}</Table.Cell>
-									<Table.Cell class="text-xs"
-										>{historicalQuery[row.key as keyof FairValueQuery]}</Table.Cell
-									>
-								</Table.Row>
-							{/if}
-						{/each}
-					</Table.Root>
+					<ReportViewer df={historicalQuery} rows={displayQueryParameterRows} />
 
 					<div class="text-center text-xs font-semibold">Result</div>
-					<Table.Root>
-						{#each displayReportRows as row (row.key)}
-							{#if historicalQuery[row.key as keyof FairValueResult]}
-								<Table.Row class="grid grid-cols-2">
-									<Table.Cell class="text-right text-xs text-gray-600">{row.display}</Table.Cell>
-									<Table.Cell class="text-xs"
-										>{formatNumber(
-											historicalQuery[row.key as keyof FairValueResult] as number,
-											3
-										)}</Table.Cell
-									>
-								</Table.Row>
-							{/if}
-						{/each}
-					</Table.Root>
+					<ReportViewer df={historicalQuery} rows={displayReportRows} />
 				</Accordion.Content>
 			</Accordion.Item>
 		{/each}

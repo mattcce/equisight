@@ -119,3 +119,21 @@ function getDateInterval(
 
 	return { start, end };
 }
+
+export const displayRows = [
+	{ key: 'revenue', display: 'Revenue' },
+	{ key: 'eps', display: 'EPS' },
+	{ key: 'ebitda', display: 'EBITDA' },
+	{ key: 'netIncome', display: 'Net Income' },
+	{ key: 'totalAssets', display: 'Total Assets' },
+	{ key: 'totalLiabilities', display: 'Total Liabilities' },
+	{ key: 'shareholderEquity', display: 'Shareholder Equity' },
+	{ key: 'longTermDebt', display: 'Long Term Debt' },
+	{ key: 'cashAndEquivalents', display: 'Cash and Equivalents' },
+	{ key: 'operatingCashFlow', display: 'Operating Cash Flow' },
+	{ key: 'freeCashFlow', display: 'Free Cash Flow' },
+	{ key: 'grossMargin', display: 'Gross Margin' },
+	{ key: 'roe', display: 'ROE' },
+	{ key: 'roa', display: 'ROA' },
+	{ key: 'debtToEquity', display: 'Debt : Equity' }
+];

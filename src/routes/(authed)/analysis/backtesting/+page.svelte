@@ -4,16 +4,22 @@
 	import { apiClient } from '$lib/api/client';
 	import { setNavContext } from '$lib/classes/nav.svelte';
 	import ClearAllButton from '$lib/components/ClearAllButton.svelte';
+	import ReportViewer from '$lib/components/ReportViewer.svelte';
 	import * as Accordion from '$lib/components/ui/accordion';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import { Separator } from '$lib/components/ui/separator';
-	import * as Table from '$lib/components/ui/table';
 	import * as Tabs from '$lib/components/ui/tabs';
 	import { BACKTESTING_HISTORY, getLocalStorage, setLocalStorage } from '$lib/storage';
-	import { debounce, formatDateNumeric, formatDateTime, formatNumber } from '$lib/utils';
+	import { debounce, formatDateNumeric, formatDateTime } from '$lib/utils';
 
 	import { tools } from '../utils';
+	import {
+		type BacktestResult,
+		type BacktestReport,
+		displayQueryParameterRows,
+		displayReportRows
+	} from './utils';
 
 	setNavContext(
 		{ title: 'Backtesting', supplement: 'Analysis Tool', route: '/analysis/backtesting' },
@@ -25,31 +31,6 @@
 
 	const tool = tools.filter((t) => t.route === '/analysis/backtesting')[0];
 
-	type BacktestQuery = {
-		ticker: string;
-		purchaseDate: string;
-		currentDate: string;
-		investmentType: string;
-		lumpSumAmount?: number;
-		dcaAmount?: number;
-		dcaFrequency?: string;
-	};
-	type BacktestResult = BacktestQuery & {
-		totalInvested: number;
-		totalSharesPurchased: number;
-		averagePurchasePrice: number;
-		currentPrice: number;
-		currentValue: number;
-		totalReturn: number;
-		totalReturnPercentage: number;
-		annualizedReturn: number;
-		daysHeld: number;
-		numberOfPurchases: number;
-	};
-	type BacktestReport = BacktestQuery &
-		BacktestResult & {
-			completedTimestamp: number;
-		};
 	let historicalQueries: BacktestReport[] = $state(getLocalStorage(BACKTESTING_HISTORY, []));
 	$effect(() => {
 		if (historicalQueries) {
@@ -141,29 +122,6 @@
 			.json()
 			.then((result) => (historicalQueries = [formatResult(result), ...historicalQueries]));
 	}
-
-	const displayQueryParameterRows = [
-		{ key: 'ticker', display: 'Ticker' },
-		{ key: 'purchaseDate', display: 'Purchase Date' },
-		{ key: 'currentDate', display: 'End Date' },
-		{ key: 'investmentType', display: 'Investment Type' },
-		{ key: 'lumpSumAmount', display: 'Lump Sum Amount' },
-		{ key: 'dcaAmount', display: 'DCA Amount' },
-		{ key: 'dcaFrequency', display: 'DCA Frequency' }
-	];
-
-	const displayReportRows = [
-		{ key: 'totalInvested', display: 'Total Invested' },
-		{ key: 'totalSharesPurchased', display: 'Total Shares Purchased' },
-		{ key: 'averagePurchasePrice', display: 'Average Purchase Price' },
-		{ key: 'currentPrice', display: 'Current Price' },
-		{ key: 'currentValue', display: 'Current Value' },
-		{ key: 'totalReturn', display: 'Total Return' },
-		{ key: 'totalReturnPercentage', display: 'Total Return (%)' },
-		{ key: 'annualizedReturn', display: 'Annualised Return (%)' },
-		{ key: 'daysHeld', display: 'Days Held' },
-		{ key: 'numberOfPurchases', display: 'Number of Purchases' }
-	];
 </script>
 
 <div class="text-sm font-semibold">{tool.title}</div>
@@ -236,44 +194,22 @@
 	<ClearAllButton bind:target={historicalQueries} flushValueProducer={() => []} />
 </div>
 
-<Accordion.Root type="single" value="0">
+<Accordion.Root
+	type="single"
+	value={historicalQueries[0]?.completedTimestamp.toString() ?? undefined}
+>
 	{#if historicalQueries.length !== 0}
 		{#each historicalQueries as historicalQuery (historicalQuery.completedTimestamp)}
-			<Accordion.Item>
-				<Accordion.Trigger class="text-sm" value={historicalQuery.completedTimestamp.toString()}
-					>{formatDateTime(new Date(historicalQuery.completedTimestamp))}</Accordion.Trigger
+			<Accordion.Item value={historicalQuery.completedTimestamp.toString()}>
+				<Accordion.Trigger class="text-sm">
+					{formatDateTime(new Date(historicalQuery.completedTimestamp))}</Accordion.Trigger
 				>
 				<Accordion.Content class="flex flex-col gap-2">
 					<div class="text-center text-xs font-semibold">Parameters</div>
-					<Table.Root>
-						{#each displayQueryParameterRows as row (row.key)}
-							{#if historicalQuery[row.key as keyof BacktestQuery]}
-								<Table.Row class="grid grid-cols-2">
-									<Table.Cell class="text-right text-xs text-gray-600">{row.display}</Table.Cell>
-									<Table.Cell class="text-xs"
-										>{historicalQuery[row.key as keyof BacktestQuery]}</Table.Cell
-									>
-								</Table.Row>
-							{/if}
-						{/each}
-					</Table.Root>
+					<ReportViewer df={historicalQuery} rows={displayQueryParameterRows} />
 
 					<div class="text-center text-xs font-semibold">Result</div>
-					<Table.Root>
-						{#each displayReportRows as row (row.key)}
-							{#if historicalQuery[row.key as keyof BacktestResult]}
-								<Table.Row class="grid grid-cols-2">
-									<Table.Cell class="text-right text-xs text-gray-600">{row.display}</Table.Cell>
-									<Table.Cell class="text-xs"
-										>{formatNumber(
-											historicalQuery[row.key as keyof BacktestResult] as number,
-											3
-										)}</Table.Cell
-									>
-								</Table.Row>
-							{/if}
-						{/each}
-					</Table.Root>
+					<ReportViewer df={historicalQuery} rows={displayReportRows} />
 				</Accordion.Content>
 			</Accordion.Item>
 		{/each}

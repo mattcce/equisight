@@ -8,10 +8,12 @@
 	import { setNavContext } from '$lib/classes/nav.svelte';
 	import type { PriceDataFrame } from '$lib/classes/types';
 	import BreathingIndicator from '$lib/components/BreathingIndicator.svelte';
+	import ReportViewer from '$lib/components/ReportViewer.svelte';
 	import { Button, buttonVariants } from '$lib/components/ui/button';
 	import * as Drawer from '$lib/components/ui/drawer';
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
+	import * as Select from '$lib/components/ui/select';
 	import Separator from '$lib/components/ui/separator/separator.svelte';
 	import * as Tabs from '$lib/components/ui/tabs';
 	import { commitAddPosition } from '$lib/states/user.svelte';
@@ -19,8 +21,7 @@
 
 	import HoldingsViewer from './HoldingsViewer.svelte';
 	import PriceDataViewer from './PriceDataViewer.svelte';
-	import ReportViewer from './ReportViewer.svelte';
-	import { tickerPriceHistoryRetrievers } from './utils';
+	import { displayRows, tickerPriceHistoryRetrievers } from './utils';
 
 	const { data } = $props();
 	const { ticker, info, quarterlyReports, annualReports } = data;
@@ -39,8 +40,12 @@
 
 	let priceHistoryDisplayPeriod = $state('1D');
 	let cachedPriceData: { [period: string]: Promise<PriceDataFrame> } = {};
-	let financialReportDisplayPeriod = $state('quarterly');
+
 	let isEditingHoldings = $state(false);
+
+	let financialReportDisplayPeriod = $state('quarterly');
+	let quarterlyReportKey = $state(quarterlyReports[0]?.title);
+	let annualReportKey = $state(annualReports[0]?.title);
 
 	const now = new Date();
 	let inputNewPosition = $state({
@@ -225,9 +230,47 @@
 
 <div>
 	{#if financialReportDisplayPeriod === 'quarterly' && quarterlyReports.length !== 0}
-		<ReportViewer reports={quarterlyReports} />
+		<Select.Root type="single" bind:value={quarterlyReportKey}>
+			<Select.Trigger class="w-full py-2 text-xs">
+				{quarterlyReports.find((fr) => fr.title === quarterlyReportKey)!.title}
+			</Select.Trigger>
+			<Select.Content>
+				<Select.Group>
+					<Select.Label>End Date</Select.Label>
+					{#each quarterlyReports as report (report.title)}
+						<Select.Item class="text-xs" value={report.title} label={report.title}>
+							{report.title}
+						</Select.Item>
+					{/each}
+				</Select.Group>
+			</Select.Content>
+		</Select.Root>
+
+		<ReportViewer
+			df={quarterlyReports.find((fr) => fr.title === quarterlyReportKey)!}
+			rows={displayRows}
+		/>
 	{:else if financialReportDisplayPeriod === 'annual' && annualReports.length !== 0}
-		<ReportViewer reports={annualReports} />
+		<Select.Root type="single" bind:value={annualReportKey}>
+			<Select.Trigger class="w-full py-2 text-xs">
+				{annualReports.find((fr) => fr.title === annualReportKey)!.title}
+			</Select.Trigger>
+			<Select.Content>
+				<Select.Group>
+					<Select.Label>End Date</Select.Label>
+					{#each annualReports as report (report.title)}
+						<Select.Item class="text-xs" value={report.title} label={report.title}>
+							{report.title}
+						</Select.Item>
+					{/each}
+				</Select.Group>
+			</Select.Content>
+		</Select.Root>
+
+		<ReportViewer
+			df={annualReports.find((fr) => fr.title === annualReportKey)!}
+			rows={displayRows}
+		/>
 	{:else}
 		<div class="mt-6 text-center text-sm text-gray-600">No financial reports available.</div>
 	{/if}
