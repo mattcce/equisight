@@ -19,7 +19,7 @@ export async function initialiseUser(): Promise<void> {
 	const user = new User(identifier);
 
 	const watchlist = await apiClient(`/users/me/watchlist`, { method: 'GET' })
-		.then((r) => r.json())
+		.then(async (r) => r.json())
 		.then((r) => r.tickers);
 
 	watchlist.forEach((t) => user.addTicker(t));

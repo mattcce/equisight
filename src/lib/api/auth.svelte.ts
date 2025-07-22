@@ -8,7 +8,7 @@ export function handleUnauthorised(): void {
 	authStore.isAuthenticated = false;
 
 	// call logout route to invalidate session
-	fetch(`http://${PUBLIC_API_DOMAIN}/auth/logout`, { method: 'POST', credentials: 'include' });
+	fetch(`${PUBLIC_API_DOMAIN}/auth/logout`, { method: 'POST', credentials: 'include' });
 
 	clearUserData();
 }
@@ -24,7 +24,7 @@ export async function login(
 	onErrorCallbacks?: { [key in LoginErrorCodes]?: () => void }
 ): Promise<void> {
 	const response = await window
-		.fetch(`http://${PUBLIC_API_DOMAIN}/auth/login`, {
+		.fetch(`${PUBLIC_API_DOMAIN}/auth/login`, {
 			method: 'POST',
 			body: new URLSearchParams({
 				username,
@@ -61,7 +61,7 @@ export async function register(
 	onErrorCallbacks?: { [key in RegisterErrorCodes]: () => void }
 ): Promise<void> {
 	const response = await window
-		.fetch(`http://${PUBLIC_API_DOMAIN}/auth/register`, {
+		.fetch(`${PUBLIC_API_DOMAIN}/auth/register`, {
 			method: 'POST',
 			body: JSON.stringify({
 				email: username,
@@ -99,7 +99,7 @@ export async function logout(
 	onErrorCallbacks?: { [errorCode: number]: () => void }
 ): Promise<void> {
 	const response = await window
-		.fetch(`http://${PUBLIC_API_DOMAIN}/auth/logout`, {
+		.fetch(`${PUBLIC_API_DOMAIN}/auth/logout`, {
 			method: 'POST',
 			credentials: 'include'
 		})

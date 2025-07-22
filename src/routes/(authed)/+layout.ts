@@ -2,6 +2,8 @@ import { goto } from '$app/navigation';
 import { page } from '$app/state';
 import { authStore } from '$lib/states/auth.svelte';
 
+export const prerender = false;
+
 export async function load(): Promise<void> {
 	const isAuthenticated = authStore.isAuthenticated;
 

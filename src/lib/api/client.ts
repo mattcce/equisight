@@ -5,7 +5,7 @@ import { fatal } from './fatal';
 
 export async function apiClient(route: string, requestInit: RequestInit): Promise<Response> {
 	try {
-		const response = await window.fetch(`http://${PUBLIC_API_DOMAIN}${route}`, {
+		const response = await window.fetch(`${PUBLIC_API_DOMAIN}${route}`, {
 			...requestInit,
 			credentials: 'include'
 		});
