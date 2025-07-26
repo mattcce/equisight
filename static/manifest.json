@@ -5,7 +5,7 @@
 	"start_url": "/",
 	"icons": [
 		{
-			"src": "svelte-logo-square.png",
+			"src": "assets/svelte-logo-square.png",
 			"sizes": "512x512",
 			"type": "image/png",
 			"purpose": "any maskable"
