@@ -27,6 +27,7 @@ export type BacktestReport = BacktestQuery &
 export const displayQueryParameterRows = [
 	{ key: 'ticker', display: 'Ticker' },
 	{ key: 'purchaseDate', display: 'Purchase Date' },
+	{ key: 'sellDate', display: 'Close Position Date' },
 	{ key: 'currentDate', display: 'End Date' },
 	{ key: 'investmentType', display: 'Investment Type' },
 	{ key: 'lumpSumAmount', display: 'Lump Sum Amount' },

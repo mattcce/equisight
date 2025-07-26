@@ -11,7 +11,7 @@
 	import { Separator } from '$lib/components/ui/separator';
 	import * as Tabs from '$lib/components/ui/tabs';
 	import { BACKTESTING_HISTORY, getLocalStorage, setLocalStorage } from '$lib/storage';
-	import { debounce, formatDateNumeric, formatDateTime } from '$lib/utils';
+	import { debounce, formatDateTime } from '$lib/utils';
 
 	import { tools } from '../utils';
 	import {
@@ -41,13 +41,15 @@
 	let backtestingQueryOptions: {
 		ticker: string;
 		purchaseDate: string;
+		sellDate: string;
 		investmentType: 'lumpSum' | 'dca';
 		lumpSumAmount: string;
 		dcaAmount: string;
 		dcaFrequency: 'weekly' | 'monthly' | 'yearly';
 	} = $state({
 		ticker: '',
-		purchaseDate: formatDateNumeric(new Date()),
+		purchaseDate: '',
+		sellDate: '',
 		investmentType: 'lumpSum',
 		lumpSumAmount: '1000',
 		dcaAmount: '100',
@@ -108,7 +110,7 @@
 
 	async function submitBacktestingQuery(): Promise<void> {
 		const response = await apiClient(
-			`/backtester/calculate-return/${backtestingQueryOptions.ticker}?purchaseDate=${backtestingQueryOptions.purchaseDate}&investmentType=${backtestingQueryOptions.investmentType}&lumpSumAmount=${parseFloat(backtestingQueryOptions.lumpSumAmount)}&dcaAmount=${parseFloat(backtestingQueryOptions.dcaAmount)}&dcaFrequency=${backtestingQueryOptions.dcaFrequency}`,
+			`/backtester/calculate-return/${backtestingQueryOptions.ticker}?purchaseDate=${backtestingQueryOptions.purchaseDate}&sellDate=${backtestingQueryOptions.sellDate}&investmentType=${backtestingQueryOptions.investmentType}&lumpSumAmount=${parseFloat(backtestingQueryOptions.lumpSumAmount)}&dcaAmount=${parseFloat(backtestingQueryOptions.dcaAmount)}&dcaFrequency=${backtestingQueryOptions.dcaFrequency}`,
 			{ method: 'GET' }
 		);
 
@@ -146,6 +148,9 @@
 		bind:value={backtestingQueryOptions.purchaseDate}
 		placeholder="YYYY-MM-DD"
 	/>
+
+	<span>Close Position Date</span>
+	<Input class="w-full" bind:value={backtestingQueryOptions.sellDate} placeholder="YYYY-MM-DD" />
 
 	<span>Strategy</span>
 
