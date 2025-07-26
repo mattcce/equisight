@@ -79,8 +79,8 @@ function historyRouteRetrieverFactory(
 		const { history } = await apiClient(`/ticker/${ticker}/history?start=${start}&end=${end}`, {
 			method: 'GET'
 		}).then((r) => r.json());
+		history.reverse();
 
-		console.log(history);
 		const marketOpen = new Date(history[0].timestamp * 1000);
 		const marketClose = new Date(history[history.length - 1].timestamp * 1000);
 
@@ -117,6 +117,7 @@ function getDateInterval(
 
 	const start = date.toISOString().split('T')[0];
 
+	console.log(`range: ${start} --- ${end}`);
 	return { start, end };
 }
 
