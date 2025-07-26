@@ -3,10 +3,11 @@ import { test, expect } from '@playwright/test';
 test('first time registering and logging in', async ({ page }) => {
 	await page.goto('localhost:5173');
 	await page.getByRole('textbox', { name: 'Username' }).click();
-	await page.getByRole('textbox', { name: 'Username' }).fill('user@example.com');
+	await page.getByRole('textbox', { name: 'Username' }).fill('user000@example.com');
 	await page.getByRole('textbox', { name: 'Password' }).click();
 	await page.getByRole('textbox', { name: 'Password' }).fill('Password#1');
 	await page.getByRole('button', { name: 'Register' }).click();
+	await expect(page.getByRole('button', { name: 'Log In' })).toBeEnabled();
 	await page.getByRole('textbox', { name: 'Password' }).click();
 	await page.getByRole('textbox', { name: 'Password' }).fill('Password#1');
 	await page.getByRole('button', { name: 'Log In' }).click();
@@ -16,7 +17,7 @@ test('first time registering and logging in', async ({ page }) => {
 test('news querying', async ({ page }) => {
 	await page.goto('localhost:5173');
 	await page.getByRole('textbox', { name: 'Username' }).click();
-	await page.getByRole('textbox', { name: 'Username' }).fill('user@example.com');
+	await page.getByRole('textbox', { name: 'Username' }).fill('user000@example.com');
 	await page.getByRole('textbox', { name: 'Password' }).click();
 	await page.getByRole('textbox', { name: 'Password' }).fill('Password#1');
 	await page.getByRole('button', { name: 'Log In' }).click();
@@ -43,7 +44,7 @@ test('news querying', async ({ page }) => {
 test('add/remove tickers to/from watchlist', async ({ page }) => {
 	await page.goto('localhost:5173');
 	await page.getByRole('textbox', { name: 'Username' }).click();
-	await page.getByRole('textbox', { name: 'Username' }).fill('user@example.com');
+	await page.getByRole('textbox', { name: 'Username' }).fill('user000@example.com');
 	await page.getByRole('textbox', { name: 'Password' }).click();
 	await page.getByRole('textbox', { name: 'Password' }).fill('Password#1');
 	await page.getByRole('button', { name: 'Log In' }).click();
@@ -60,9 +61,9 @@ test('add/remove tickers to/from watchlist', async ({ page }) => {
 });
 
 test('add holdings to a ticker', async ({ page }) => {
-	await page.goto('http://localhost:5173');
+	await page.goto('localhost:5173');
 	await page.getByRole('textbox', { name: 'Username' }).click();
-	await page.getByRole('textbox', { name: 'Username' }).fill('user@example.com');
+	await page.getByRole('textbox', { name: 'Username' }).fill('user000@example.com');
 	await page.getByRole('textbox', { name: 'Username' }).press('Tab');
 	await page.getByRole('textbox', { name: 'Password' }).fill('Password#1');
 	await page.getByRole('button', { name: 'Log In' }).click();
