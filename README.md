@@ -1,4 +1,8 @@
-# equisight
+# EquiSight
+
+EquiSight is a personal financial investment application.
+
+This is a personal collaborative project created for mostly didactic purposes.
 
 ## Development
 
